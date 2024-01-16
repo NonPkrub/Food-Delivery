@@ -16,7 +16,7 @@ func NewBasketRepository(DB *gorm.DB) domain.BasketRepository {
 }
 
 func (b *basketRepository) CreateBasket(req *domain.Basket) error {
-	tx := b.DB.Where("user_id =?", req.UserID).Create(req)
+	tx := b.DB.Where("user_id =?", req.UserID).Where("promotion_id=?", 0).Create(req)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return tx.Error
@@ -26,7 +26,7 @@ func (b *basketRepository) CreateBasket(req *domain.Basket) error {
 }
 
 func (b *basketRepository) AddPromotionBasket(req *domain.Basket) error {
-	tx := b.DB.Save(req)
+	tx := b.DB.Model(&domain.Basket{}).Where("user_id=?", req.UserID).Updates(req)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return tx.Error
@@ -39,7 +39,7 @@ func (b *basketRepository) DeletePromotionBasket(req *domain.Basket) error {
 
 	tx := b.DB.Find(req, req.UserID)
 
-	req.PromotionID = 0
+	req.PromotionID = nil
 
 	tx = b.DB.Save(req)
 	if tx.Error != nil {
@@ -58,9 +58,12 @@ func (b *basketRepository) GetBasketByUserId(req *domain.Basket) (*domain.Basket
 	}
 
 	basket := &domain.BasketReply{
-		Model:       req.Model,
-		UserID:      req.UserID,
-		PromotionID: req.PromotionID,
+		Model:  req.Model,
+		UserID: req.UserID,
+	}
+
+	if req.PromotionID != nil {
+		basket.PromotionID = *req.PromotionID
 	}
 
 	return basket, nil

@@ -4,14 +4,15 @@ type Basket struct {
 	Model
 	UserID      uint      `json:"user_id"`
 	User        User      `gorm:"foreignKey:UserID;references:ID"`
-	PromotionID uint      `json:"promotion_id"`
+	PromotionID *uint     `json:"promotion_id" gorm:"nullable"`
 	Promotion   Promotion `gorm:"foreignKey:PromotionID;reference:ID"`
 
 	BasketProduct []BasketProduct `gorm:"foreignKey:BasketID"`
 }
 
 type BasketForm struct {
-	UserID uint `json:"user_id"`
+	UserID      uint `json:"user_id"`
+	PromotionID uint `json:"promotion_id"`
 }
 
 type BasketReply struct {
@@ -32,7 +33,7 @@ func (p *Basket) TableName() string {
 type BasketUseCase interface {
 	CreateBasket(b *BasketForm) error
 	AddPromotionBasket(b *BasketPromotionForm) error
-	DeletePromotionBasket(b *BasketPromotionForm) error
+	DeletePromotionBasket(uint) error
 	GetBasketByUserId(uint) (*BasketReply, error)
 }
 

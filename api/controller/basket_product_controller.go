@@ -2,6 +2,7 @@ package controller
 
 import (
 	"Food-delivery/domain"
+	"encoding/json"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
@@ -19,14 +20,25 @@ func (b *BasketProductController) AddProductInBasket(c *fiber.Ctx) error {
 	var req *domain.BasketProductForm
 	id := c.Params("id")
 
+	jsonData, err := json.Marshal(req)
+	if err != nil {
+		return err
+	}
+
+	var newReq domain.BasketProductForm
+	err = json.Unmarshal(jsonData, &newReq)
+	if err != nil {
+		return err
+	}
+
 	idInt, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
 		return err
 	}
 
-	req.BasketID = uint(idInt)
+	newReq.BasketID = uint(idInt)
 
-	if err := c.BodyParser(req); err != nil {
+	if err := c.BodyParser(&newReq); err != nil {
 		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
 			"status":      fiber.ErrInternalServerError.Message,
 			"status_code": fiber.ErrInternalServerError.Code,
@@ -35,7 +47,7 @@ func (b *BasketProductController) AddProductInBasket(c *fiber.Ctx) error {
 		})
 	}
 
-	err = b.basketProductUseCase.AddProductInBasket(req)
+	err = b.basketProductUseCase.AddProductInBasket(&newReq)
 	if err != nil {
 		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
 			"status":      fiber.ErrInternalServerError.Message,
@@ -57,14 +69,25 @@ func (b *BasketProductController) EditProductInBasket(c *fiber.Ctx) error {
 	var req *domain.BasketProductForm
 	id := c.Params("id")
 
+	jsonData, err := json.Marshal(req)
+	if err != nil {
+		return err
+	}
+
+	var newReq domain.BasketProductForm
+	err = json.Unmarshal(jsonData, &newReq)
+	if err != nil {
+		return err
+	}
+
 	idInt, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
 		return err
 	}
 
-	req.BasketID = uint(idInt)
+	newReq.BasketID = uint(idInt)
 
-	if err := c.BodyParser(req); err != nil {
+	if err := c.BodyParser(&newReq); err != nil {
 		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
 			"status":      fiber.ErrInternalServerError.Message,
 			"status_code": fiber.ErrInternalServerError.Code,
@@ -73,7 +96,7 @@ func (b *BasketProductController) EditProductInBasket(c *fiber.Ctx) error {
 		})
 	}
 
-	err = b.basketProductUseCase.EditProductInBasket(req)
+	err = b.basketProductUseCase.EditProductInBasket(&newReq)
 	if err != nil {
 		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
 			"status":      fiber.ErrInternalServerError.Message,
@@ -95,23 +118,25 @@ func (b *BasketProductController) DeleteProductInBasket(c *fiber.Ctx) error {
 	var req *domain.BasketProductForm
 	id := c.Params("id")
 
+	jsonData, err := json.Marshal(req)
+	if err != nil {
+		return err
+	}
+
+	var newReq domain.BasketProductForm
+	err = json.Unmarshal(jsonData, &newReq)
+	if err != nil {
+		return err
+	}
+
 	idInt, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
 		return err
 	}
 
-	req.BasketID = uint(idInt)
+	newReq.BasketID = uint(idInt)
 
-	if err := c.BodyParser(req); err != nil {
-		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
-			"status":      fiber.ErrInternalServerError.Message,
-			"status_code": fiber.ErrInternalServerError.Code,
-			"message":     err.Error(),
-			"result":      nil,
-		})
-	}
-
-	err = b.basketProductUseCase.DeleteProductInBasket(req)
+	err = b.basketProductUseCase.DeleteProductInBasket(&newReq)
 	if err != nil {
 		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
 			"status":      fiber.ErrInternalServerError.Message,
@@ -133,23 +158,25 @@ func (b *BasketProductController) GetProductInBasket(c *fiber.Ctx) error {
 	var req *domain.BasketProductForm
 	id := c.Params("id")
 
+	jsonData, err := json.Marshal(req)
+	if err != nil {
+		return err
+	}
+
+	var newReq domain.BasketProductForm
+	err = json.Unmarshal(jsonData, &newReq)
+	if err != nil {
+		return err
+	}
+
 	idInt, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
 		return err
 	}
 
-	req.BasketID = uint(idInt)
+	newReq.BasketID = uint(idInt)
 
-	if err := c.BodyParser(req); err != nil {
-		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
-			"status":      fiber.ErrInternalServerError.Message,
-			"status_code": fiber.ErrInternalServerError.Code,
-			"message":     err.Error(),
-			"result":      nil,
-		})
-	}
-
-	res, err := b.basketProductUseCase.GetProductInBasket(req)
+	res, err := b.basketProductUseCase.GetProductInBasket(&newReq)
 	if err != nil {
 		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
 			"status":      fiber.ErrInternalServerError.Message,

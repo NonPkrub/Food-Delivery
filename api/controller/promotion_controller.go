@@ -2,6 +2,7 @@ package controller
 
 import (
 	"Food-delivery/domain"
+	"encoding/json"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
@@ -17,7 +18,18 @@ func NewPromotionController(promotionUseCase domain.PromotionUseCase) *Promotion
 
 func (p *PromotionController) CreatePromotion(c *fiber.Ctx) error {
 	var req *domain.PromotionForm
-	if err := c.BodyParser(req); err != nil {
+	jsonData, err := json.Marshal(req)
+	if err != nil {
+		return err
+	}
+
+	var newReq domain.PromotionForm
+	err = json.Unmarshal(jsonData, &newReq)
+	if err != nil {
+		return err
+	}
+
+	if err := c.BodyParser(&newReq); err != nil {
 		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
 			"status":      fiber.ErrInternalServerError.Message,
 			"status_code": fiber.ErrInternalServerError.Code,
@@ -26,7 +38,7 @@ func (p *PromotionController) CreatePromotion(c *fiber.Ctx) error {
 		})
 	}
 
-	err := p.promotionUseCase.CreatePromotion(req)
+	err = p.promotionUseCase.CreatePromotion(&newReq)
 	if err != nil {
 		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
 			"status":      fiber.ErrInternalServerError.Message,
@@ -46,7 +58,25 @@ func (p *PromotionController) CreatePromotion(c *fiber.Ctx) error {
 
 func (p *PromotionController) EditPromotion(c *fiber.Ctx) error {
 	var req *domain.PromotionForm
-	if err := c.BodyParser(req); err != nil {
+	jsonData, err := json.Marshal(req)
+	if err != nil {
+		return err
+	}
+
+	var newReq domain.PromotionForm
+	err = json.Unmarshal(jsonData, &newReq)
+	if err != nil {
+		return err
+	}
+
+	id := c.Params("id")
+
+	idInt, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+
+	if err := c.BodyParser(&newReq); err != nil {
 		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
 			"status":      fiber.ErrInternalServerError.Message,
 			"status_code": fiber.ErrInternalServerError.Code,
@@ -55,7 +85,7 @@ func (p *PromotionController) EditPromotion(c *fiber.Ctx) error {
 		})
 	}
 
-	err := p.promotionUseCase.EditPromotion(req)
+	err = p.promotionUseCase.EditPromotion(&newReq, uint(idInt))
 	if err != nil {
 		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
 			"status":      fiber.ErrInternalServerError.Message,
@@ -135,6 +165,7 @@ func (p *PromotionController) GetAllPromotion(c *fiber.Ctx) error {
 			"result":      nil,
 		})
 	}
+
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"status":      "OK",
 		"status_code": fiber.StatusOK,

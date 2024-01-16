@@ -13,7 +13,7 @@ func NewBasketProductUseCase(basketProductRepo domain.BasketProductRepository) d
 func (b *basketProductUseCase) AddProductInBasket(req *domain.BasketProductForm) error {
 	basket := &domain.BasketProduct{
 		BasketID:  req.BasketID,
-		ProductID: req.BasketID,
+		ProductID: req.ProductID,
 		Quantity:  req.Quantity,
 	}
 
@@ -28,7 +28,7 @@ func (b *basketProductUseCase) AddProductInBasket(req *domain.BasketProductForm)
 func (b *basketProductUseCase) EditProductInBasket(req *domain.BasketProductForm) error {
 	basket := &domain.BasketProduct{
 		BasketID:  req.BasketID,
-		ProductID: req.BasketID,
+		ProductID: req.ProductID,
 		Quantity:  req.Quantity,
 	}
 
@@ -43,7 +43,7 @@ func (b *basketProductUseCase) EditProductInBasket(req *domain.BasketProductForm
 func (b *basketProductUseCase) DeleteProductInBasket(req *domain.BasketProductForm) error {
 	basket := &domain.BasketProduct{
 		BasketID:  req.BasketID,
-		ProductID: req.BasketID,
+		ProductID: req.ProductID,
 		Quantity:  req.Quantity,
 	}
 
@@ -59,7 +59,7 @@ func (b *basketProductUseCase) GetProductInBasket(req *domain.BasketProductForm)
 
 	basket := &domain.BasketProduct{
 		BasketID:  req.BasketID,
-		ProductID: req.BasketID,
+		ProductID: req.ProductID,
 		Quantity:  req.Quantity,
 	}
 

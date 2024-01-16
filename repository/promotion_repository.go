@@ -25,8 +25,8 @@ func (p *promotionRepository) CreatePromotion(req *domain.Promotion) error {
 	return nil
 }
 
-func (p *promotionRepository) EditPromotion(req *domain.Promotion) error {
-	tx := p.DB.Save(req)
+func (p *promotionRepository) EditPromotion(req *domain.Promotion, id uint) error {
+	tx := p.DB.Model(&domain.Promotion{}).Where("id =?", id).Updates(req)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return tx.Error
@@ -65,7 +65,7 @@ func (p *promotionRepository) GetPromotionById(req *domain.Promotion, id uint) (
 
 func (p *promotionRepository) GetAllPromotion() ([]domain.Promotion, error) {
 	pro := []domain.Promotion{}
-	tx := p.DB.Find(pro)
+	tx := p.DB.Find(&pro)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return nil, tx.Error

@@ -26,7 +26,7 @@ func (p *promotionUseCase) CreatePromotion(req *domain.PromotionForm) error {
 	return nil
 }
 
-func (p *promotionUseCase) EditPromotion(req *domain.PromotionForm) error {
+func (p *promotionUseCase) EditPromotion(req *domain.PromotionForm, id uint) error {
 	promotion := &domain.Promotion{
 		Code:     req.Code,
 		Discount: req.Discount,
@@ -34,7 +34,7 @@ func (p *promotionUseCase) EditPromotion(req *domain.PromotionForm) error {
 		Detail:   req.Detail,
 	}
 
-	err := p.promotionRepo.EditPromotion(promotion)
+	err := p.promotionRepo.EditPromotion(promotion, id)
 	if err != nil {
 		return err
 	}

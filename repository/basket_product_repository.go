@@ -27,7 +27,7 @@ func (b *basketProductRepository) AddProductInBasket(req *domain.BasketProduct) 
 }
 
 func (b *basketProductRepository) EditProductInBasket(req *domain.BasketProduct) error {
-	tx := b.DB.Save(req)
+	tx := b.DB.Model(&domain.BasketProduct{}).Where("basket_id=?", req.BasketID).Updates(req)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return tx.Error
@@ -38,7 +38,7 @@ func (b *basketProductRepository) EditProductInBasket(req *domain.BasketProduct)
 
 func (b *basketProductRepository) DeleteProductInBasket(req *domain.BasketProduct) error {
 
-	tx := b.DB.Unscoped().Delete(req)
+	tx := b.DB.Where("basket_id=?", req.BasketID).Delete(req)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return tx.Error

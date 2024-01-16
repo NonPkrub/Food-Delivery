@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"Food-delivery/domain"
+	"fmt"
 )
 
 type basketUseCase struct {
@@ -15,7 +16,8 @@ func NewBasketUseCase(basketRepo domain.BasketRepository) domain.BasketUseCase {
 func (b *basketUseCase) CreateBasket(req *domain.BasketForm) error {
 
 	basket := &domain.Basket{
-		UserID: req.UserID,
+		UserID:      req.UserID,
+		PromotionID: nil,
 	}
 
 	err := b.basketRepo.CreateBasket(basket)
@@ -30,7 +32,7 @@ func (b *basketUseCase) AddPromotionBasket(req *domain.BasketPromotionForm) erro
 
 	basket := &domain.Basket{
 		UserID:      req.UserID,
-		PromotionID: req.PromotionID,
+		PromotionID: &req.PromotionID,
 	}
 
 	err := b.basketRepo.AddPromotionBasket(basket)
@@ -41,11 +43,11 @@ func (b *basketUseCase) AddPromotionBasket(req *domain.BasketPromotionForm) erro
 	return nil
 }
 
-func (b *basketUseCase) DeletePromotionBasket(req *domain.BasketPromotionForm) error {
-
+func (b *basketUseCase) DeletePromotionBasket(id uint) error {
+	fmt.Println(id)
 	basket := &domain.Basket{
-		UserID:      req.UserID,
-		PromotionID: req.PromotionID,
+		UserID:      id,
+		PromotionID: nil,
 	}
 
 	err := b.basketRepo.DeletePromotionBasket(basket)

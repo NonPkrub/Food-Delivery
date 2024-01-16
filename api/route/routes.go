@@ -51,8 +51,8 @@ func SetupRouter() *fiber.App {
 	v1.Get("promotion", promotionController.GetAllPromotion)
 	v1.Get("promotion/:id", promotionController.GetPromotionById)
 	v1.Post("promotion", promotionController.CreatePromotion)
-	v1.Put("promotion", promotionController.EditPromotion)
-	v1.Delete("promotion", promotionController.DeletePromotion)
+	v1.Put("promotion/:id", promotionController.EditPromotion)
+	v1.Delete("promotion/:id", promotionController.DeletePromotion)
 
 	//basket
 	v1.Post("user/:id/basket", basketController.CreateBasket)

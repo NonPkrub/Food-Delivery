@@ -28,7 +28,7 @@ func (p *promotionProductRepository) AddPromotionProduct(req *domain.PromotionPr
 
 func (p *promotionProductRepository) EditPromotionProduct(req *domain.PromotionProduct) error {
 
-	tx := p.DB.Save(req)
+	tx := p.DB.Model(&domain.PromotionProduct{}).Where("promotion_id=?", req.PromotionID).Updates(req)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return tx.Error

@@ -15,11 +15,10 @@ func (p *Promotion) TableName() string {
 }
 
 type PromotionForm struct {
-	Code      string  `json:"code"`
-	Discount  float64 `json:"discount"`
-	Name      string  `json:"name"`
-	Detail    string  `json:"detail"`
-	ProductID uint    `json:"product_id"`
+	Code     string  `json:"code"`
+	Discount float64 `json:"discount"`
+	Name     string  `json:"name"`
+	Detail   string  `json:"detail"`
 }
 
 type PromotionReply struct {
@@ -32,7 +31,7 @@ type PromotionReply struct {
 
 type PromotionUseCase interface {
 	CreatePromotion(p *PromotionForm) error
-	EditPromotion(p *PromotionForm) error
+	EditPromotion(p *PromotionForm, id uint) error
 	DeletePromotion(id uint) error
 	GetPromotionById(id uint) (*PromotionReply, error)
 	GetAllPromotion() ([]Promotion, error)
@@ -40,7 +39,7 @@ type PromotionUseCase interface {
 
 type PromotionRepository interface {
 	CreatePromotion(p *Promotion) error
-	EditPromotion(p *Promotion) error
+	EditPromotion(p *Promotion, id uint) error
 	DeletePromotion(p *Promotion, id uint) error
 	GetPromotionById(p *Promotion, id uint) (*PromotionReply, error)
 	GetAllPromotion() ([]Promotion, error)
