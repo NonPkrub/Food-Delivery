@@ -39,7 +39,7 @@ func (p *promotionProductUseCase) EditPromotionProduct(req *domain.PromotionProd
 	return nil
 }
 
-func (p *promotionProductUseCase) GetPromotionProduct(req *domain.PromotionProductForm) (*domain.PromotionProductReply, error) {
+func (p *promotionProductUseCase) GetPromotionProduct(req *domain.PromotionProductForm) ([]domain.PromotionProductReply, error) {
 	promotion := &domain.PromotionProduct{
 		PromotionID: req.PromotionID,
 		ProductID:   req.ProductID,
@@ -50,5 +50,13 @@ func (p *promotionProductUseCase) GetPromotionProduct(req *domain.PromotionProdu
 		return nil, err
 	}
 
-	return product, nil
+	promotions := []domain.PromotionProductReply{}
+	for _, pro := range product {
+		promotions = append(promotions, domain.PromotionProductReply{
+			PromotionID: pro.PromotionID,
+			ProductID:   pro.ProductID,
+		})
+	}
+
+	return promotions, nil
 }

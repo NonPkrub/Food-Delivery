@@ -1,6 +1,9 @@
 package usecase
 
-import "Food-delivery/domain"
+import (
+	"Food-delivery/domain"
+	"fmt"
+)
 
 type basketProductUseCase struct {
 	basketProductRepo domain.BasketProductRepository
@@ -55,8 +58,7 @@ func (b *basketProductUseCase) DeleteProductInBasket(req *domain.BasketProductFo
 	return nil
 }
 
-func (b *basketProductUseCase) GetProductInBasket(req *domain.BasketProductForm) (*domain.BasketProductReply, error) {
-
+func (b *basketProductUseCase) GetProductInBasket(req *domain.BasketProductForm) ([]domain.BasketProductReply, error) {
 	basket := &domain.BasketProduct{
 		BasketID:  req.BasketID,
 		ProductID: req.ProductID,
@@ -67,7 +69,23 @@ func (b *basketProductUseCase) GetProductInBasket(req *domain.BasketProductForm)
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println(product)
 
-	return product, nil
+	products := []domain.BasketProductReply{}
+	for _, pro := range product {
+		products = append(products, domain.BasketProductReply{
+			BasketID:  pro.BasketID,
+			ProductID: pro.ProductID,
+			Quantity:  pro.Quantity,
+		})
+
+		price, err := b.basketProductRepo.GetProductById(req, pro.ProductID)
+		if err != nil {
+			return nil, err
+		}
+		fmt.Println(price.Product)
+	}
+
+	return products, nil
 
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type promotionProductRepository struct {
@@ -37,16 +38,14 @@ func (p *promotionProductRepository) EditPromotionProduct(req *domain.PromotionP
 	return nil
 }
 
-func (p *promotionProductRepository) GetPromotionProduct(req *domain.PromotionProduct) (*domain.PromotionProductReply, error) {
-	tx := p.DB.Find(req, req.PromotionID)
+func (p *promotionProductRepository) GetPromotionProduct(req *domain.PromotionProduct) ([]domain.PromotionProduct, error) {
+	var promotionProduct []domain.PromotionProduct
+
+	tx := p.DB.Preload(clause.Associations).Where("promotion_id =?", req.PromotionID).Find(&promotionProduct)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return nil, tx.Error
 	}
 
-	promotion := &domain.PromotionProductReply{
-		PromotionID: req.PromotionID,
-		ProductID:   req.ProductID,
-	}
-	return promotion, nil
+	return promotionProduct, nil
 }

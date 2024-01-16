@@ -47,19 +47,31 @@ func (b *basketProductRepository) DeleteProductInBasket(req *domain.BasketProduc
 	return nil
 }
 
-func (b *basketProductRepository) GetProductInBasket(req *domain.BasketProduct) (*domain.BasketProductReply, error) {
+func (b *basketProductRepository) GetProductInBasket(req *domain.BasketProduct) ([]domain.BasketProduct, error) {
+	var basketProducts []domain.BasketProduct
 
-	tx := b.DB.Preload(clause.Associations).Where("basket_id =?", req.BasketID).First(req)
+	tx := b.DB.Preload(clause.Associations).Where("basket_id =?", req.BasketID).Find(&basketProducts)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return nil, tx.Error
 	}
 
-	basket := &domain.BasketProductReply{
-		BasketID:  req.BasketID,
-		ProductID: req.ProductID,
-		Quantity:  req.Quantity,
+	return basketProducts, nil
+}
+
+func (b *basketProductRepository) GetProductById(req *domain.BasketProductForm, id uint) (*domain.BasketProductPrice, error) {
+	var pro domain.Product
+	tx := b.DB.First(&pro, id)
+	if tx.Error != nil {
+		fmt.Println(tx.Error)
+		return nil, tx.Error
 	}
 
-	return basket, nil
+	product := &domain.BasketProductPrice{
+		BasketID: id,
+		Product:  []domain.Product{pro},
+		Quantity: req.Quantity,
+	}
+
+	return product, nil
 }
