@@ -1,6 +1,8 @@
 package usecase
 
-import "Food-delivery/domain"
+import (
+	"Food-delivery/domain"
+)
 
 type promotionProductUseCase struct {
 	promotionProductRepo domain.PromotionProductRepository
@@ -45,6 +47,8 @@ func (p *promotionProductUseCase) GetPromotionProduct(req *domain.PromotionProdu
 		ProductID:   req.ProductID,
 	}
 
+	//fmt.Println(promotion)
+
 	product, err := p.promotionProductRepo.GetPromotionProduct(promotion)
 	if err != nil {
 		return nil, err
@@ -55,7 +59,7 @@ func (p *promotionProductUseCase) GetPromotionProduct(req *domain.PromotionProdu
 	promotions := []domain.PromotionProductReply{}
 	for _, pro := range product {
 
-		products, err := p.promotionProductRepo.GetProductById(promotion)
+		products, err := p.promotionProductRepo.GetProductById(promotion, pro.ProductID)
 		if err != nil {
 			return nil, err
 		}

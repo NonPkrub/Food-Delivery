@@ -36,5 +36,5 @@ type PromotionProductRepository interface {
 	AddPromotionProduct(*PromotionProduct) error
 	EditPromotionProduct(*PromotionProduct) error
 	GetPromotionProduct(*PromotionProduct) ([]PromotionProduct, error)
-	GetProductById(p *PromotionProduct) (*PromotionProductReplyId, error)
+	GetProductById(p *PromotionProduct, id uint) (*PromotionProductReplyId, error)
 }

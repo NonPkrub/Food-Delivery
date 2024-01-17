@@ -50,10 +50,11 @@ func (p *promotionProductRepository) GetPromotionProduct(req *domain.PromotionPr
 	return promotionProduct, nil
 }
 
-func (p *promotionProductRepository) GetProductById(req *domain.PromotionProduct) (*domain.PromotionProductReplyId, error) {
+func (p *promotionProductRepository) GetProductById(req *domain.PromotionProduct, id uint) (*domain.PromotionProductReplyId, error) {
 	var pro domain.Product
 
-	tx := p.DB.First(&pro, req.ProductID)
+	req.ProductID = id
+	tx := p.DB.Find(&pro, req.ProductID)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return nil, tx.Error
