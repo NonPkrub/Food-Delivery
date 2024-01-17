@@ -59,9 +59,9 @@ func (b *basketProductRepository) GetProductInBasket(req *domain.BasketProduct) 
 	return basketProducts, nil
 }
 
-func (b *basketProductRepository) GetProductById(req *domain.BasketProductForm, id uint) (*domain.BasketProductPrice, error) {
+func (b *basketProductRepository) GetProductById(req *domain.BasketProduct, id uint) (*domain.BasketProductPrice, error) {
 	var pro domain.Product
-	tx := b.DB.First(&pro, id)
+	tx := b.DB.Find(&pro, id)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return nil, tx.Error
@@ -69,7 +69,10 @@ func (b *basketProductRepository) GetProductById(req *domain.BasketProductForm, 
 
 	product := &domain.BasketProductPrice{
 		BasketID: id,
-		Product:  []domain.Product{pro},
+		// Product:  []domain.Product{pro},
+		Name:     pro.Name,
+		Detail:   pro.Detail,
+		Price:    pro.Price,
 		Quantity: req.Quantity,
 	}
 

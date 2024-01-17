@@ -6,28 +6,18 @@ type BasketProduct struct {
 	Quantity  uint `json:"quantity"`
 }
 
-type BasketProductForm struct {
-	BasketID  uint `json:"basket_id"`
-	ProductID uint `json:"product_id"`
-	Quantity  uint `json:"quantity"`
-}
-
 type BasketProductReply struct {
-	BasketID  uint `json:"basket_id"`
-	ProductID uint `json:"product_id"`
-	Quantity  uint `json:"quantity"`
-}
-
-// type BasketProductPriceForm struct {
-// 	BasketID uint      `json:"basket_id"`
-// 	Product  []Product `json:"product"`
-// 	Quantity uint      `json:"quantity"`
-// }
-
-type BasketProductPrice struct {
 	BasketID uint      `json:"basket_id"`
 	Product  []Product `json:"product"`
 	Quantity uint      `json:"quantity"`
+}
+
+type BasketProductPrice struct {
+	BasketID uint    `json:"basket_id"`
+	Name     string  `json:"name"`
+	Detail   string  `json:"detail"`
+	Price    float64 `json:"price"`
+	Quantity uint    `json:"quantity"`
 }
 
 func (p *BasketProduct) TableName() string {
@@ -35,10 +25,10 @@ func (p *BasketProduct) TableName() string {
 }
 
 type BasketProductUseCase interface {
-	AddProductInBasket(b *BasketProductForm) error
-	EditProductInBasket(b *BasketProductForm) error
-	DeleteProductInBasket(b *BasketProductForm) error
-	GetProductInBasket(b *BasketProductForm) ([]BasketProductReply, error)
+	AddProductInBasket(b *BasketProduct) error
+	EditProductInBasket(b *BasketProduct) error
+	DeleteProductInBasket(b *BasketProduct) error
+	GetProductInBasket(b *BasketProduct) ([]BasketProductReply, error)
 }
 
 type BasketProductRepository interface {
@@ -46,5 +36,5 @@ type BasketProductRepository interface {
 	EditProductInBasket(b *BasketProduct) error
 	DeleteProductInBasket(b *BasketProduct) error
 	GetProductInBasket(b *BasketProduct) ([]BasketProduct, error)
-	GetProductById(b *BasketProductForm, id uint) (*BasketProductPrice, error)
+	GetProductById(b *BasketProduct, id uint) (*BasketProductPrice, error)
 }

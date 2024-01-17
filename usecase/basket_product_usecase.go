@@ -13,7 +13,7 @@ func NewBasketProductUseCase(basketProductRepo domain.BasketProductRepository) d
 	return &basketProductUseCase{basketProductRepo: basketProductRepo}
 }
 
-func (b *basketProductUseCase) AddProductInBasket(req *domain.BasketProductForm) error {
+func (b *basketProductUseCase) AddProductInBasket(req *domain.BasketProduct) error {
 	basket := &domain.BasketProduct{
 		BasketID:  req.BasketID,
 		ProductID: req.ProductID,
@@ -28,7 +28,7 @@ func (b *basketProductUseCase) AddProductInBasket(req *domain.BasketProductForm)
 	return nil
 }
 
-func (b *basketProductUseCase) EditProductInBasket(req *domain.BasketProductForm) error {
+func (b *basketProductUseCase) EditProductInBasket(req *domain.BasketProduct) error {
 	basket := &domain.BasketProduct{
 		BasketID:  req.BasketID,
 		ProductID: req.ProductID,
@@ -43,7 +43,7 @@ func (b *basketProductUseCase) EditProductInBasket(req *domain.BasketProductForm
 	return nil
 }
 
-func (b *basketProductUseCase) DeleteProductInBasket(req *domain.BasketProductForm) error {
+func (b *basketProductUseCase) DeleteProductInBasket(req *domain.BasketProduct) error {
 	basket := &domain.BasketProduct{
 		BasketID:  req.BasketID,
 		ProductID: req.ProductID,
@@ -58,7 +58,7 @@ func (b *basketProductUseCase) DeleteProductInBasket(req *domain.BasketProductFo
 	return nil
 }
 
-func (b *basketProductUseCase) GetProductInBasket(req *domain.BasketProductForm) ([]domain.BasketProductReply, error) {
+func (b *basketProductUseCase) GetProductInBasket(req *domain.BasketProduct) ([]domain.BasketProductReply, error) {
 	basket := &domain.BasketProduct{
 		BasketID:  req.BasketID,
 		ProductID: req.ProductID,
@@ -69,23 +69,42 @@ func (b *basketProductUseCase) GetProductInBasket(req *domain.BasketProductForm)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(product)
+
+	var totalProductPrice float64
+
+	pb := []domain.Product{}
 
 	products := []domain.BasketProductReply{}
 	for _, pro := range product {
-		products = append(products, domain.BasketProductReply{
-			BasketID:  pro.BasketID,
-			ProductID: pro.ProductID,
-			Quantity:  pro.Quantity,
-		})
-
 		price, err := b.basketProductRepo.GetProductById(req, pro.ProductID)
 		if err != nil {
 			return nil, err
 		}
-		fmt.Println(price.Product)
+
+		totalPrice := calculateTotalPrice(price.Price, pro.Quantity)
+		fmt.Println(totalPrice)
+		totalProductPrice += totalPrice
+		fmt.Println(totalProductPrice)
+
+		products = append(products, domain.BasketProductReply{
+			BasketID: pro.BasketID,
+			Product: append(pb, domain.Product{
+				Name:   price.Name,
+				Detail: price.Detail,
+				Price:  price.Price,
+			}),
+			Quantity: pro.Quantity,
+		})
+
 	}
 
 	return products, nil
 
+}
+
+func calculateTotalPrice(products float64, number uint) float64 {
+	var totalPrice float64
+	totalPrice = products * float64(number)
+
+	return totalPrice
 }

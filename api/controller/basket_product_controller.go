@@ -17,7 +17,7 @@ func NewBasketProductController(basketProductUseCase domain.BasketProductUseCase
 }
 
 func (b *BasketProductController) AddProductInBasket(c *fiber.Ctx) error {
-	var req *domain.BasketProductForm
+	var req *domain.BasketProduct
 	id := c.Params("id")
 
 	jsonData, err := json.Marshal(req)
@@ -25,7 +25,7 @@ func (b *BasketProductController) AddProductInBasket(c *fiber.Ctx) error {
 		return err
 	}
 
-	var newReq domain.BasketProductForm
+	var newReq domain.BasketProduct
 	err = json.Unmarshal(jsonData, &newReq)
 	if err != nil {
 		return err
@@ -66,7 +66,7 @@ func (b *BasketProductController) AddProductInBasket(c *fiber.Ctx) error {
 }
 
 func (b *BasketProductController) EditProductInBasket(c *fiber.Ctx) error {
-	var req *domain.BasketProductForm
+	var req *domain.BasketProduct
 	id := c.Params("id")
 
 	jsonData, err := json.Marshal(req)
@@ -74,7 +74,7 @@ func (b *BasketProductController) EditProductInBasket(c *fiber.Ctx) error {
 		return err
 	}
 
-	var newReq domain.BasketProductForm
+	var newReq domain.BasketProduct
 	err = json.Unmarshal(jsonData, &newReq)
 	if err != nil {
 		return err
@@ -115,7 +115,7 @@ func (b *BasketProductController) EditProductInBasket(c *fiber.Ctx) error {
 }
 
 func (b *BasketProductController) DeleteProductInBasket(c *fiber.Ctx) error {
-	var req *domain.BasketProductForm
+	var req *domain.BasketProduct
 	id := c.Params("id")
 
 	jsonData, err := json.Marshal(req)
@@ -123,7 +123,7 @@ func (b *BasketProductController) DeleteProductInBasket(c *fiber.Ctx) error {
 		return err
 	}
 
-	var newReq domain.BasketProductForm
+	var newReq domain.BasketProduct
 	err = json.Unmarshal(jsonData, &newReq)
 	if err != nil {
 		return err
@@ -155,7 +155,7 @@ func (b *BasketProductController) DeleteProductInBasket(c *fiber.Ctx) error {
 }
 
 func (b *BasketProductController) GetProductInBasket(c *fiber.Ctx) error {
-	var req *domain.BasketProductForm
+	var req *domain.BasketProduct
 	id := c.Params("id")
 
 	jsonData, err := json.Marshal(req)
@@ -163,7 +163,7 @@ func (b *BasketProductController) GetProductInBasket(c *fiber.Ctx) error {
 		return err
 	}
 
-	var newReq domain.BasketProductForm
+	var newReq domain.BasketProduct
 	err = json.Unmarshal(jsonData, &newReq)
 	if err != nil {
 		return err
