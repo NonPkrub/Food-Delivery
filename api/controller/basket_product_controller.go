@@ -176,7 +176,7 @@ func (b *BasketProductController) GetProductInBasket(c *fiber.Ctx) error {
 
 	newReq.BasketID = uint(idInt)
 
-	res, err := b.basketProductUseCase.GetProductInBasket(&newReq)
+	res, totalPrice, err := b.basketProductUseCase.GetProductInBasket(&newReq)
 	if err != nil {
 		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
 			"status":      fiber.ErrInternalServerError.Message,
@@ -191,5 +191,6 @@ func (b *BasketProductController) GetProductInBasket(c *fiber.Ctx) error {
 		"status_code": fiber.StatusOK,
 		"message":     "",
 		"result":      res,
+		"totalPrice":  totalPrice,
 	})
 }

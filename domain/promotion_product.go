@@ -11,8 +11,15 @@ type PromotionProductForm struct {
 }
 
 type PromotionProductReply struct {
-	PromotionID uint `json:"promotion_id"`
-	ProductID   uint `json:"product_id"`
+	PromotionID uint      `json:"promotion_id"`
+	Product     []Product `json:"product"`
+}
+
+type PromotionProductReplyId struct {
+	PromotionID uint    `json:"promotion_id"`
+	Name        string  `json:"name"`
+	Detail      string  `json:"detail"`
+	Price       float64 `json:"price"`
 }
 
 func (p *PromotionProduct) TableName() string {
@@ -29,4 +36,5 @@ type PromotionProductRepository interface {
 	AddPromotionProduct(*PromotionProduct) error
 	EditPromotionProduct(*PromotionProduct) error
 	GetPromotionProduct(*PromotionProduct) ([]PromotionProduct, error)
+	GetProductById(p *PromotionProduct) (*PromotionProductReplyId, error)
 }

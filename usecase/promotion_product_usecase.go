@@ -50,11 +50,23 @@ func (p *promotionProductUseCase) GetPromotionProduct(req *domain.PromotionProdu
 		return nil, err
 	}
 
+	dp := []domain.Product{}
+
 	promotions := []domain.PromotionProductReply{}
 	for _, pro := range product {
+
+		products, err := p.promotionProductRepo.GetProductById(promotion)
+		if err != nil {
+			return nil, err
+		}
+
 		promotions = append(promotions, domain.PromotionProductReply{
 			PromotionID: pro.PromotionID,
-			ProductID:   pro.ProductID,
+			Product: append(dp, domain.Product{
+				Name:   products.Name,
+				Detail: products.Detail,
+				Price:  products.Price,
+			}),
 		})
 	}
 

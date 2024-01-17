@@ -58,7 +58,7 @@ func (b *basketProductUseCase) DeleteProductInBasket(req *domain.BasketProduct) 
 	return nil
 }
 
-func (b *basketProductUseCase) GetProductInBasket(req *domain.BasketProduct) ([]domain.BasketProductReply, error) {
+func (b *basketProductUseCase) GetProductInBasket(req *domain.BasketProduct) ([]domain.BasketProductReply, float64, error) {
 	basket := &domain.BasketProduct{
 		BasketID:  req.BasketID,
 		ProductID: req.ProductID,
@@ -67,7 +67,7 @@ func (b *basketProductUseCase) GetProductInBasket(req *domain.BasketProduct) ([]
 
 	product, err := b.basketProductRepo.GetProductInBasket(basket)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
 	var totalProductPrice float64
@@ -78,7 +78,7 @@ func (b *basketProductUseCase) GetProductInBasket(req *domain.BasketProduct) ([]
 	for _, pro := range product {
 		price, err := b.basketProductRepo.GetProductById(req, pro.ProductID)
 		if err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 
 		totalPrice := calculateTotalPrice(price.Price, pro.Quantity)
@@ -98,7 +98,7 @@ func (b *basketProductUseCase) GetProductInBasket(req *domain.BasketProduct) ([]
 
 	}
 
-	return products, nil
+	return products, totalProductPrice, nil
 
 }
 

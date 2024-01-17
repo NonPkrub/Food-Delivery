@@ -49,3 +49,23 @@ func (p *promotionProductRepository) GetPromotionProduct(req *domain.PromotionPr
 
 	return promotionProduct, nil
 }
+
+func (p *promotionProductRepository) GetProductById(req *domain.PromotionProduct) (*domain.PromotionProductReplyId, error) {
+	var pro domain.Product
+
+	tx := p.DB.First(&pro, req.ProductID)
+	if tx.Error != nil {
+		fmt.Println(tx.Error)
+		return nil, tx.Error
+	}
+
+	promotion := &domain.PromotionProductReplyId{
+		PromotionID: req.PromotionID,
+		Name:        pro.Name,
+		Detail:      pro.Detail,
+		Price:       pro.Price,
+	}
+
+	return promotion, nil
+
+}
