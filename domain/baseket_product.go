@@ -20,6 +20,14 @@ type BasketProductPrice struct {
 	Quantity uint    `json:"quantity"`
 }
 
+type BasketPromotionReply struct {
+	PromotionID uint    `json:"promotion_id"`
+	Code        string  `json:"code"`
+	Discount    float64 `json:"discount"`
+	Name        string  `json:"name"`
+	ProductID   uint    `json:"product_id"`
+}
+
 func (p *BasketProduct) TableName() string {
 	return "basket_products"
 }
@@ -37,4 +45,5 @@ type BasketProductRepository interface {
 	DeleteProductInBasket(b *BasketProduct) error
 	GetProductInBasket(b *BasketProduct) ([]BasketProduct, error)
 	GetProductById(b *BasketProduct, id uint) (*BasketProductPrice, error)
+	GetPromotionBasket(b *BasketProduct, id uint) (*BasketPromotionReply, error)
 }

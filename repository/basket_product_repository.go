@@ -78,3 +78,22 @@ func (b *basketProductRepository) GetProductById(req *domain.BasketProduct, id u
 
 	return product, nil
 }
+
+func (b *basketProductRepository) GetPromotionBasket(bp *domain.BasketProduct, id uint) (*domain.BasketPromotionReply, error) {
+	var pro domain.Promotion
+	tx := b.DB.Find(&pro, id)
+	if tx.Error != nil {
+		fmt.Println(tx.Error)
+		return nil, tx.Error
+	}
+
+	promotion := &domain.BasketPromotionReply{
+		PromotionID: id,
+		Code:        pro.Code,
+		Discount:    pro.Discount,
+		Name:        pro.Name,
+		ProductID:   bp.ProductID,
+	}
+
+	return promotion, nil
+}
