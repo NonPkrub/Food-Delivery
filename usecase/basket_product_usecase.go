@@ -72,7 +72,12 @@ func (b *basketProductUseCase) GetProductInBasket(req *domain.BasketProduct) ([]
 
 	var totalProductPrice float64
 
-	pb := []domain.Product{}
+	pb := []domain.ProductForm{}
+
+	promotionId, err := b.basketProductRepo.GetPromotionByBasketId(basket)
+	if err != nil {
+		return nil, 0, err
+	}
 
 	products := []domain.BasketProductReply{}
 	for _, pro := range product {
@@ -81,14 +86,23 @@ func (b *basketProductUseCase) GetProductInBasket(req *domain.BasketProduct) ([]
 			return nil, 0, err
 		}
 
-		totalPrice := calculateTotalPrice(price.Price, pro.Quantity)
-		fmt.Println(totalPrice)
-		totalProductPrice += totalPrice
-		fmt.Println(totalProductPrice)
+		if promotionId != 0 {
+			promotion, err := b.basketProductRepo.GetPromotionBasket(basket, promotionId)
+			if err != nil {
+				return nil, 0, err
+			}
+
+			if pro.ProductID == promotion.ProductID {
+				price.Price = price.Price - promotion.Discount
+			}
+
+			price.Price = price.Price - promotion.Discount
+			fmt.Println(promotion)
+		}
 
 		products = append(products, domain.BasketProductReply{
 			BasketID: pro.BasketID,
-			Product: append(pb, domain.Product{
+			Product: append(pb, domain.ProductForm{
 				Name:   price.Name,
 				Detail: price.Detail,
 				Price:  price.Price,
@@ -96,9 +110,20 @@ func (b *basketProductUseCase) GetProductInBasket(req *domain.BasketProduct) ([]
 			Quantity: pro.Quantity,
 		})
 
+		totalPrice := calculateTotalPrice(price.Price, pro.Quantity)
+		totalProductPrice += totalPrice
 	}
 
-	return products, totalProductPrice, nil
+	var totalPrices float64
+	totalPrices = totalProductPrice
+
+	// fmt.Println(promotion)
+	// if promotion.ProductID != 0 {
+	// 	totalPrices = totalProductPrice - promotion.Discount
+	// }
+	fmt.Println(totalPrices)
+
+	return products, totalPrices, nil
 
 }
 

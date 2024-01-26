@@ -7,9 +7,9 @@ type BasketProduct struct {
 }
 
 type BasketProductReply struct {
-	BasketID uint      `json:"basket_id"`
-	Product  []Product `json:"product"`
-	Quantity uint      `json:"quantity"`
+	BasketID uint          `json:"basket_id"`
+	Product  []ProductForm `json:"product"`
+	Quantity uint          `json:"quantity"`
 }
 
 type BasketProductPrice struct {
@@ -46,4 +46,5 @@ type BasketProductRepository interface {
 	GetProductInBasket(b *BasketProduct) ([]BasketProduct, error)
 	GetProductById(b *BasketProduct, id uint) (*BasketProductPrice, error)
 	GetPromotionBasket(b *BasketProduct, id uint) (*BasketPromotionReply, error)
+	GetPromotionByBasketId(b *BasketProduct) (uint, error)
 }

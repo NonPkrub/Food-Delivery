@@ -36,7 +36,6 @@ func (b *basketRepository) AddPromotionBasket(req *domain.Basket) error {
 }
 
 func (b *basketRepository) DeletePromotionBasket(req *domain.Basket) error {
-
 	tx := b.DB.Find(req, req.UserID)
 
 	req.PromotionID = nil

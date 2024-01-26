@@ -97,3 +97,14 @@ func (b *basketProductRepository) GetPromotionBasket(bp *domain.BasketProduct, i
 
 	return promotion, nil
 }
+
+func (b *basketProductRepository) GetPromotionByBasketId(bp *domain.BasketProduct) (uint, error) {
+	var pro domain.Promotion
+	tx := b.DB.Find(&pro, bp.BasketID)
+	if tx.Error != nil {
+		fmt.Println(tx.Error)
+		return 0, tx.Error
+	}
+
+	return pro.ID, nil
+}
