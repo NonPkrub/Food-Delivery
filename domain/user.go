@@ -1,5 +1,7 @@
 package domain
 
+import "github.com/golang-jwt/jwt/v4"
+
 type User struct {
 	Model
 	FirstName     string `json:"first_name"`
@@ -43,11 +45,16 @@ type UserLoginReply struct {
 }
 
 type TokenReply struct {
-	Token []byte `json:"token"`
+	AccessToken string `json:"access_token"`
 }
 
 func (u *User) TableName() string {
 	return "users"
+}
+
+type UsersClaims struct {
+	Email string `json:"email"`
+	jwt.RegisteredClaims
 }
 
 type UserUseCase interface {

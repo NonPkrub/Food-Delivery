@@ -47,8 +47,6 @@ func (p *promotionProductUseCase) GetPromotionProduct(req *domain.PromotionProdu
 		ProductID:   req.ProductID,
 	}
 
-	//fmt.Println(promotion)
-
 	product, err := p.promotionProductRepo.GetPromotionProduct(promotion)
 	if err != nil {
 		return nil, err

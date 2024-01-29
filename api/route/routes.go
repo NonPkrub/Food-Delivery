@@ -2,6 +2,7 @@ package route
 
 import (
 	"Food-delivery/api/controller"
+	"Food-delivery/api/middleware"
 	"Food-delivery/database"
 	"Food-delivery/repository"
 	"Food-delivery/usecase"
@@ -42,7 +43,7 @@ func SetupRouter() *fiber.App {
 	v1.Post("login", userController.Login)
 
 	//product
-	v1.Get("product", productController.GetAll)
+	v1.Get("product", middleware.JwtAuthentication(), productController.GetAll)
 	v1.Post("product", productController.AddProduct)
 	v1.Put("product/:id", productController.EditProduct)
 	v1.Delete("product/:id", productController.DeleteProduct)
@@ -53,9 +54,10 @@ func SetupRouter() *fiber.App {
 	v1.Post("promotion", promotionController.CreatePromotion)
 	v1.Put("promotion/:id", promotionController.EditPromotion)
 	v1.Delete("promotion/:id", promotionController.DeletePromotion)
+	v1.Post("promotion/search", promotionController.SearchPromotion)
 
 	//basket
-	v1.Post("user/:id/basket", basketController.CreateBasket)
+	//v1.Post("user/:id/basket", basketController.CreateBasket)
 	v1.Put("user/:id/basket/promotion", basketController.AddPromotionBasket)
 	v1.Delete("user/:id/basket/promotion", basketController.DeletePromotionBasket)
 	v1.Get("user/:id/basket", basketController.GetBasketByUserId)

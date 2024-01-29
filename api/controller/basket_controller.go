@@ -23,34 +23,34 @@ func NewBasketController(basketUseCase domain.BasketUseCase) *BasketController {
 	return &BasketController{basketUseCase: basketUseCase}
 }
 
-func (b *BasketController) CreateBasket(c *fiber.Ctx) error {
-	var req domain.BasketForm
-	id := c.Params("id")
+// func (b *BasketController) CreateBasket(c *fiber.Ctx) error {
+// 	var req domain.BasketForm
+// 	id := c.Params("id")
 
-	idInt, err := strconv.ParseInt(id, 10, 64)
-	if err != nil {
-		return err
-	}
+// 	idInt, err := strconv.ParseInt(id, 10, 64)
+// 	if err != nil {
+// 		return err
+// 	}
 
-	req.UserID = uint(idInt)
+// 	req.UserID = uint(idInt)
 
-	err = b.basketUseCase.CreateBasket(&req)
-	if err != nil {
-		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
-			"status":      fiber.ErrInternalServerError.Message,
-			"status_code": fiber.ErrInternalServerError.Code,
-			"message":     err.Error(),
-			"result":      nil,
-		})
-	}
+// 	err = b.basketUseCase.CreateBasket(&req)
+// 	if err != nil {
+// 		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
+// 			"status":      fiber.ErrInternalServerError.Message,
+// 			"status_code": fiber.ErrInternalServerError.Code,
+// 			"message":     err.Error(),
+// 			"result":      nil,
+// 		})
+// 	}
 
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"status":      "OK",
-		"status_code": fiber.StatusOK,
-		"message":     "",
-		"result":      nil,
-	})
-}
+// 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+// 		"status":      "OK",
+// 		"status_code": fiber.StatusOK,
+// 		"message":     "",
+// 		"result":      nil,
+// 	})
+// }
 
 func (b *BasketController) AddPromotionBasket(c *fiber.Ctx) error {
 	var req *domain.BasketPromotionForm

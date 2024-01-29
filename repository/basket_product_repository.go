@@ -81,7 +81,15 @@ func (b *basketProductRepository) GetProductById(req *domain.BasketProduct, id u
 
 func (b *basketProductRepository) GetPromotionBasket(bp *domain.BasketProduct, id uint) (*domain.BasketPromotionReply, error) {
 	var pro domain.Promotion
-	tx := b.DB.Find(&pro, id)
+	var product domain.BasketProduct
+
+	tx := b.DB.Preload(clause.Associations).Find(&pro, id)
+	if tx.Error != nil {
+		fmt.Println(tx.Error)
+		return nil, tx.Error
+	}
+
+	tx = b.DB.Find(&product, bp.BasketID)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return nil, tx.Error
@@ -92,19 +100,20 @@ func (b *basketProductRepository) GetPromotionBasket(bp *domain.BasketProduct, i
 		Code:        pro.Code,
 		Discount:    pro.Discount,
 		Name:        pro.Name,
-		ProductID:   bp.ProductID,
+		ProductID:   product.ProductID, // Assuming product ID is required
 	}
 
 	return promotion, nil
 }
 
 func (b *basketProductRepository) GetPromotionByBasketId(bp *domain.BasketProduct) (uint, error) {
-	var pro domain.Promotion
+	var pro domain.Basket
+	fmt.Println(bp.BasketID)
 	tx := b.DB.Find(&pro, bp.BasketID)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return 0, tx.Error
 	}
 
-	return pro.ID, nil
+	return *pro.PromotionID, nil
 }

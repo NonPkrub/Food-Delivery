@@ -15,15 +15,15 @@ func NewBasketRepository(DB *gorm.DB) domain.BasketRepository {
 	return &basketRepository{DB: DB}
 }
 
-func (b *basketRepository) CreateBasket(req *domain.Basket) error {
-	tx := b.DB.Where("user_id =?", req.UserID).Where("promotion_id=?", 0).Create(req)
-	if tx.Error != nil {
-		fmt.Println(tx.Error)
-		return tx.Error
-	}
+// func (b *basketRepository) CreateBasket(req *domain.Basket) error {
+// 	tx := b.DB.Where("user_id =?", req.UserID).Where("promotion_id=?", 0).Create(req)
+// 	if tx.Error != nil {
+// 		fmt.Println(tx.Error)
+// 		return tx.Error
+// 	}
 
-	return nil
-}
+// 	return nil
+// }
 
 func (b *basketRepository) AddPromotionBasket(req *domain.Basket) error {
 	tx := b.DB.Model(&domain.Basket{}).Where("user_id=?", req.UserID).Updates(req)

@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"Food-delivery/domain"
-	"encoding/json"
 	"fmt"
 	"net/mail"
 	"os"
@@ -10,7 +9,8 @@ import (
 	"time"
 	"unicode"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt/v4"
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -129,27 +129,32 @@ func (u *userUseCase) Login(d *domain.UserLoginForm) (*domain.TokenReply, error)
 		return nil, err
 	}
 
-	claims := jwt.StandardClaims{
-		Issuer:    users.Email,
-		ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
+	// claims := jwt.StandardClaims{
+	// 	Issuer:    users.Email,
+	// 	ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
+	// }
+
+	claims := domain.UsersClaims{
+		Email: d.Email,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			NotBefore: jwt.NewNumericDate(time.Now()),
+			Issuer:    "access_token",
+			Subject:   "users_access_token",
+			ID:        uuid.NewString(),
+			Audience:  []string{"users"},
+		},
 	}
 
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-
 	token, err := jwtToken.SignedString([]byte(os.Getenv("JWT_SECRET")))
-	if err != nil {
-		return nil, err
-	}
-	response := map[string]interface{}{
-		"jwtToken": token,
-	}
-	jsonResponse, err := json.Marshal(response)
 	if err != nil {
 		return nil, err
 	}
 
 	res := &domain.TokenReply{
-		Token: jsonResponse,
+		AccessToken: token,
 	}
 
 	return res, nil

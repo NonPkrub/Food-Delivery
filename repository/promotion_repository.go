@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type promotionRepository struct {
@@ -45,22 +46,16 @@ func (p *promotionRepository) DeletePromotion(req *domain.Promotion, id uint) er
 	return nil
 }
 
-func (p *promotionRepository) GetPromotionById(req *domain.Promotion, id uint) (*domain.PromotionReply, error) {
+func (p *promotionRepository) GetPromotionProduct(req *domain.PromotionProduct) ([]domain.PromotionProduct, error) {
+	var promotionProduct []domain.PromotionProduct
 
-	tx := p.DB.First(req, id)
+	tx := p.DB.Preload(clause.Associations).Where("promotion_id =?", req.PromotionID).Find(&promotionProduct)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return nil, tx.Error
 	}
 
-	promotion := &domain.PromotionReply{
-		Code:     req.Code,
-		Discount: req.Discount,
-		Name:     req.Name,
-		Detail:   req.Detail,
-	}
-
-	return promotion, nil
+	return promotionProduct, nil
 }
 
 func (p *promotionRepository) GetAllPromotion() ([]domain.Promotion, error) {
@@ -72,4 +67,44 @@ func (p *promotionRepository) GetAllPromotion() ([]domain.Promotion, error) {
 	}
 
 	return pro, nil
+}
+
+func (p *promotionRepository) SearchPromotion(req *domain.Promotion) (*domain.Promotion, error) {
+	tx := p.DB.Where("code =?", req.Code).Find(req)
+
+	if tx.Error != nil {
+		fmt.Println(tx.Error)
+		return nil, tx.Error
+	}
+
+	promotion := &domain.Promotion{
+		Model:    req.Model,
+		Code:     req.Code,
+		Discount: req.Discount,
+		Name:     req.Name,
+		Detail:   req.Detail,
+	}
+
+	return promotion, nil
+}
+
+func (p *promotionRepository) GetProductById(req *domain.PromotionProduct, id uint) (*domain.PromotionProductReplyId, error) {
+	var pro domain.Product
+
+	req.ProductID = id
+	tx := p.DB.Find(&pro, req.ProductID)
+	if tx.Error != nil {
+		fmt.Println(tx.Error)
+		return nil, tx.Error
+	}
+
+	promotion := &domain.PromotionProductReplyId{
+		PromotionID: req.PromotionID,
+		Name:        pro.Name,
+		Detail:      pro.Detail,
+		Price:       pro.Price,
+	}
+
+	return promotion, nil
+
 }

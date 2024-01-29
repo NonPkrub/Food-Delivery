@@ -1,6 +1,8 @@
 package usecase
 
-import "Food-delivery/domain"
+import (
+	"Food-delivery/domain"
+)
 
 type promotionUseCase struct {
 	promotionRepo domain.PromotionRepository
@@ -52,11 +54,41 @@ func (p *promotionUseCase) DeletePromotion(id uint) error {
 	return nil
 }
 
-func (p *promotionUseCase) GetPromotionById(id uint) (*domain.PromotionReply, error) {
-	var promotion domain.Promotion
-	promotions, err := p.promotionRepo.GetPromotionById(&promotion, id)
+func (p *promotionUseCase) GetPromotionById(id uint) ([]domain.PromotionProductReply, error) {
+	// var promotion domain.Promotion
+	// promotions, err := p.promotionRepo.GetPromotionById(&promotion, id)
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	// return promotions, nil
+	promotion := &domain.PromotionProduct{
+		PromotionID: id,
+	}
+
+	product, err := p.promotionRepo.GetPromotionProduct(promotion)
 	if err != nil {
 		return nil, err
+	}
+
+	dp := []domain.Product{}
+
+	promotions := []domain.PromotionProductReply{}
+	for _, pro := range product {
+
+		products, err := p.promotionRepo.GetProductById(promotion, pro.ProductID)
+		if err != nil {
+			return nil, err
+		}
+
+		promotions = append(promotions, domain.PromotionProductReply{
+			PromotionID: pro.PromotionID,
+			Product: append(dp, domain.Product{
+				Name:   products.Name,
+				Detail: products.Detail,
+				Price:  products.Price,
+			}),
+		})
 	}
 
 	return promotions, nil
@@ -80,4 +112,52 @@ func (p *promotionUseCase) GetAllPromotion() ([]domain.Promotion, error) {
 	}
 
 	return promotions, nil
+}
+
+func (p *promotionUseCase) SearchPromotion(req *domain.Promotion) ([]domain.SearchPromotionReply, error) {
+	promotion, err := p.promotionRepo.SearchPromotion(req)
+	if err != nil {
+		return nil, err
+	}
+
+	product := &domain.PromotionProduct{
+		PromotionID: promotion.ID,
+	}
+
+	res, err := p.promotionRepo.GetPromotionProduct(product)
+	if err != nil {
+		return nil, err
+	}
+
+	dp := []domain.Product{}
+
+	promotions := []domain.SearchPromotionReply{}
+	promotions = append(promotions, domain.SearchPromotionReply{
+		Code:     promotion.Code,
+		Discount: promotion.Discount,
+		Name:     promotion.Name,
+		Detail:   promotion.Detail,
+	})
+	for _, pro := range res {
+
+		products, err := p.promotionRepo.GetProductById(product, pro.ProductID)
+		if err != nil {
+			return nil, err
+		}
+
+		promotions = append(promotions, domain.SearchPromotionReply{
+			Code:     promotion.Code,
+			Discount: promotion.Discount,
+			Name:     promotion.Name,
+			Detail:   promotion.Detail,
+			Product: append(dp, domain.Product{
+				Name:   products.Name,
+				Detail: products.Detail,
+				Price:  products.Price,
+			}),
+		})
+	}
+
+	return promotions, nil
+
 }

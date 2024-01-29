@@ -91,13 +91,11 @@ func (b *basketProductUseCase) GetProductInBasket(req *domain.BasketProduct) ([]
 			if err != nil {
 				return nil, 0, err
 			}
-
+			fmt.Println(pro.ProductID == promotion.ProductID, pro.ProductID)
 			if pro.ProductID == promotion.ProductID {
 				price.Price = price.Price - promotion.Discount
 			}
 
-			price.Price = price.Price - promotion.Discount
-			fmt.Println(promotion)
 		}
 
 		products = append(products, domain.BasketProductReply{
@@ -121,7 +119,18 @@ func (b *basketProductUseCase) GetProductInBasket(req *domain.BasketProduct) ([]
 	// if promotion.ProductID != 0 {
 	// 	totalPrices = totalProductPrice - promotion.Discount
 	// }
-	fmt.Println(totalPrices)
+	// if promotionId != 0 {
+	// 	promotion, err := b.basketProductRepo.GetPromotionBasket(basket, promotionId)
+	// 	if err != nil {
+	// 		return nil, 0, err
+	// 	}
+
+	// 	if products.ProductID == promotion.ProductID {
+	// 		totalPrices = totalProductPrice - promotion.Discount
+	// 	}
+
+	// }
+	// fmt.Println(totalPrices)
 
 	return products, totalPrices, nil
 

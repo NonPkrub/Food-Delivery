@@ -16,11 +16,23 @@ func NewUserRepository(DB *gorm.DB) domain.UserRepository {
 }
 
 func (u *userRepository) SignUp(d *domain.User) (*domain.UserReply, error) {
+	tx := u.DB.Begin()
+	if err := tx.Create(d).Error; err != nil {
+		tx.Rollback()
+		fmt.Println(err)
+		return nil, err
+	}
 
-	tx := u.DB.Create(d)
-	if tx.Error != nil {
-		fmt.Println(tx.Error)
-		return nil, tx.Error
+	var req *domain.Basket
+	if err := tx.Where("user_id = ?", d.ID).Where("promotion_id = ?", 0).Create(req).Error; err != nil {
+		tx.Rollback()
+		fmt.Println(err)
+		return nil, err
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		fmt.Println(err)
+		return nil, err
 	}
 
 	user := &domain.UserReply{

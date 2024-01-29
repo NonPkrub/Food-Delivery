@@ -13,20 +13,20 @@ func NewBasketUseCase(basketRepo domain.BasketRepository) domain.BasketUseCase {
 	return &basketUseCase{basketRepo: basketRepo}
 }
 
-func (b *basketUseCase) CreateBasket(req *domain.BasketForm) error {
+// func (b *basketUseCase) CreateBasket(req *domain.BasketForm) error {
 
-	basket := &domain.Basket{
-		UserID:      req.UserID,
-		PromotionID: nil,
-	}
+// 	basket := &domain.Basket{
+// 		UserID:      req.UserID,
+// 		PromotionID: nil,
+// 	}
 
-	err := b.basketRepo.CreateBasket(basket)
-	if err != nil {
-		return err
-	}
+// 	err := b.basketRepo.CreateBasket(basket)
+// 	if err != nil {
+// 		return err
+// 	}
 
-	return nil
-}
+// 	return nil
+// }
 
 func (b *basketUseCase) AddPromotionBasket(req *domain.BasketPromotionForm) error {
 

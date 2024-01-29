@@ -173,3 +173,44 @@ func (p *PromotionController) GetAllPromotion(c *fiber.Ctx) error {
 		"result":      res,
 	})
 }
+
+func (p *PromotionController) SearchPromotion(c *fiber.Ctx) error {
+	var req *domain.Promotion
+	jsonData, err := json.Marshal(req)
+	if err != nil {
+		return err
+	}
+
+	var newReq domain.Promotion
+	err = json.Unmarshal(jsonData, &newReq)
+	if err != nil {
+		return err
+	}
+
+	if err := c.BodyParser(&newReq); err != nil {
+		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
+			"status":      fiber.ErrInternalServerError.Message,
+			"status_code": fiber.ErrInternalServerError.Code,
+			"message":     err.Error(),
+			"result":      nil,
+		})
+	}
+
+	res, err := p.promotionUseCase.SearchPromotion(&newReq)
+	if err != nil {
+		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
+			"status":      fiber.ErrInternalServerError.Message,
+			"status_code": fiber.ErrInternalServerError.Code,
+			"message":     err.Error(),
+			"result":      nil,
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"status":      "OK",
+		"status_code": fiber.StatusOK,
+		"message":     "",
+		"result":      res,
+	})
+
+}
