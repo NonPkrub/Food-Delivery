@@ -114,6 +114,7 @@ func (u *userUseCase) Login(d *domain.UserLoginForm) (*domain.TokenReply, error)
 	if err != nil {
 		return nil, err
 	}
+
 	users := &domain.User{
 		Email:    d.Email,
 		Password: d.Password,

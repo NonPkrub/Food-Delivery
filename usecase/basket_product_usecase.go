@@ -80,23 +80,25 @@ func (b *basketProductUseCase) GetProductInBasket(req *domain.BasketProduct) ([]
 	}
 
 	products := []domain.BasketProductReply{}
+	oneTimeUse := false
+
 	for _, pro := range product {
 		price, err := b.basketProductRepo.GetProductById(req, pro.ProductID)
 		if err != nil {
 			return nil, 0, err
 		}
 
-		if promotionId != 0 {
-			promotion, err := b.basketProductRepo.GetPromotionBasket(basket, promotionId)
-			if err != nil {
-				return nil, 0, err
-			}
-			fmt.Println(pro.ProductID == promotion.ProductID, pro.ProductID)
-			if pro.ProductID == promotion.ProductID {
-				price.Price = price.Price - promotion.Discount
-			}
+		// if promotionId != 0 {
+		// 	promotion, err := b.basketProductRepo.GetPromotionBasket(basket, promotionId)
+		// 	if err != nil {
+		// 		return nil, 0, err
+		// 	}
+		// 	fmt.Println(pro.ProductID == promotion.ProductID, pro.ProductID)
+		// 	if pro.ProductID == promotion.ProductID {
+		// 		price.Price = price.Price - promotion.Discount
+		// 	}
 
-		}
+		// }
 
 		products = append(products, domain.BasketProductReply{
 			BasketID: pro.BasketID,
@@ -110,30 +112,27 @@ func (b *basketProductUseCase) GetProductInBasket(req *domain.BasketProduct) ([]
 
 		totalPrice := calculateTotalPrice(price.Price, pro.Quantity)
 		totalProductPrice += totalPrice
+
+		fmt.Println(!oneTimeUse)
+		if promotionId != 0 && !oneTimeUse {
+			promotion, err := b.basketProductRepo.GetPromotionBasket(basket, promotionId)
+			if err != nil {
+				return nil, 0, err
+			}
+
+			if pro.ProductID == promotion.ProductID {
+				totalProductPrice = totalProductPrice - promotion.Discount
+			}
+
+			oneTimeUse = true
+
+		}
 	}
 
 	var totalPrices float64
 	totalPrices = totalProductPrice
 
-	// fmt.Println(promotion)
-	// if promotion.ProductID != 0 {
-	// 	totalPrices = totalProductPrice - promotion.Discount
-	// }
-	// if promotionId != 0 {
-	// 	promotion, err := b.basketProductRepo.GetPromotionBasket(basket, promotionId)
-	// 	if err != nil {
-	// 		return nil, 0, err
-	// 	}
-
-	// 	if products.ProductID == promotion.ProductID {
-	// 		totalPrices = totalProductPrice - promotion.Discount
-	// 	}
-
-	// }
-	// fmt.Println(totalPrices)
-
 	return products, totalPrices, nil
-
 }
 
 func calculateTotalPrice(products float64, number uint) float64 {
