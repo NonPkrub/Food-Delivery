@@ -40,11 +40,11 @@ type BasketProductUseCase interface {
 }
 
 type BasketProductRepository interface {
-	AddProductInBasket(b *BasketProduct) error
-	EditProductInBasket(b *BasketProduct) error
-	DeleteProductInBasket(b *BasketProduct) error
-	GetProductInBasket(b *BasketProduct) ([]BasketProduct, error)
-	GetProductById(b *BasketProduct, id uint) (*BasketProductPrice, error)
-	GetPromotionBasket(b *BasketProduct, id uint) (*BasketPromotionReply, error)
-	GetPromotionByBasketId(b *BasketProduct) (uint, error)
+	Create(b *BasketProduct) error
+	Edit(b *BasketProduct) error
+	Delete(b *BasketProduct) error
+	FindAllByID(b *BasketProduct) ([]BasketProduct, error)
+	GetOneById(b *BasketProduct) (*BasketProduct, error)
+	FindOne(b *BasketProduct) (*BasketProduct, error)
+	GetPromotionByBasketID(b *BasketProduct) (uint, error)
 }

@@ -58,13 +58,14 @@ type UsersClaims struct {
 }
 
 type UserUseCase interface {
-	SignUp(u *UserSignUpForm) (*UserReply, error)
-	Login(u *UserLoginForm) (*TokenReply, error)
-	GetUserById(id uint) (*UserReply, error)
+	SignUp(user *UserSignUpForm) (*UserReply, error)
+	Login(user *UserLoginForm) (*TokenReply, error)
+	GetUserByID(id uint) (*UserReply, error)
+	GetMe() (*UserReply, error)
 }
 
 type UserRepository interface {
-	SignUp(u *User) (*UserReply, error)
-	Login(u *User) (*UserLoginReply, error)
-	GetUserById(u *User, id uint) (*UserReply, error)
+	CreateUser(user *User) (*User, error)
+	FindOne(user *User) (*User, error)
+	GetOneByID(user *User) (*User, error)
 }

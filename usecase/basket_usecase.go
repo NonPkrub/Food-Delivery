@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"Food-delivery/domain"
-	"fmt"
 )
 
 type basketUseCase struct {
@@ -28,14 +27,13 @@ func NewBasketUseCase(basketRepo domain.BasketRepository) domain.BasketUseCase {
 // 	return nil
 // }
 
-func (b *basketUseCase) AddPromotionBasket(req *domain.BasketPromotionForm) error {
-
+func (uc *basketUseCase) AddPromotionBasket(req *domain.BasketPromotionForm) error {
 	basket := &domain.Basket{
 		UserID:      req.UserID,
 		PromotionID: &req.PromotionID,
 	}
 
-	err := b.basketRepo.AddPromotionBasket(basket)
+	err := uc.basketRepo.Create(basket)
 	if err != nil {
 		return err
 	}
@@ -43,32 +41,39 @@ func (b *basketUseCase) AddPromotionBasket(req *domain.BasketPromotionForm) erro
 	return nil
 }
 
-func (b *basketUseCase) DeletePromotionBasket(id uint) error {
-	fmt.Println(id)
-	basket := &domain.Basket{
-		UserID:      id,
-		PromotionID: nil,
-	}
-
-	err := b.basketRepo.DeletePromotionBasket(basket)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (b *basketUseCase) GetBasketByUserId(id uint) (*domain.BasketReply, error) {
-
+func (uc *basketUseCase) DeletePromotionBasket(id uint) error {
 	basket := &domain.Basket{
 		UserID: id,
 	}
 
-	userBasket, err := b.basketRepo.GetBasketByUserId(basket)
+	err := uc.basketRepo.Delete(basket)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (uc *basketUseCase) GetBasketByUserId(id uint) (*domain.BasketReply, error) {
+	basket := &domain.Basket{
+		UserID: id,
+	}
+
+	userBasket, err := uc.basketRepo.GetOneByID(basket)
 	if err != nil {
 		return nil, err
 	}
 
-	return userBasket, nil
+	var promotionID uint
+	if userBasket.PromotionID != nil {
+		promotionID = *userBasket.PromotionID
+	}
+
+	basketReply := &domain.BasketReply{
+		UserID:      userBasket.UserID,
+		PromotionID: promotionID,
+	}
+
+	return basketReply, nil
 
 }

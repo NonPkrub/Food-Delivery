@@ -36,8 +36,8 @@ type ProductUseCase interface {
 
 type ProductRepository interface {
 	GetAll() ([]Product, error)
-	GetProductById(p *Product, id uint) (*ProductReply, error)
-	DeleteProduct(p *Product, id uint) error
-	EditProduct(p *Product, id uint) (*ProductReply, error)
-	AddProduct(p *Product) (*ProductReply, error)
+	GetOneByID(p *Product) (*Product, error)
+	Delete(p *Product) error
+	Edit(p *Product) (*Product, error)
+	Create(p *Product) (*Product, error)
 }

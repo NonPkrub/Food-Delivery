@@ -6,20 +6,20 @@ import (
 
 type promotionProductUseCase struct {
 	promotionProductRepo domain.PromotionProductRepository
+	productRepo          domain.ProductRepository
 }
 
-func NewPromotionProductUseCase(promotionProductRepo domain.PromotionProductRepository) domain.PromotionProductUseCase {
-	return &promotionProductUseCase{promotionProductRepo: promotionProductRepo}
+func NewPromotionProductUseCase(promotionProductRepo domain.PromotionProductRepository, productRepo domain.ProductRepository) domain.PromotionProductUseCase {
+	return &promotionProductUseCase{promotionProductRepo: promotionProductRepo, productRepo: productRepo}
 }
 
-func (p *promotionProductUseCase) AddPromotionProduct(req *domain.PromotionProductForm) error {
-
+func (uc *promotionProductUseCase) AddPromotionProduct(form *domain.PromotionProductForm) error {
 	promotion := &domain.PromotionProduct{
-		PromotionID: req.PromotionID,
-		ProductID:   req.ProductID,
+		PromotionID: form.PromotionID,
+		ProductID:   form.ProductID,
 	}
 
-	err := p.promotionProductRepo.AddPromotionProduct(promotion)
+	err := uc.promotionProductRepo.Create(promotion)
 	if err != nil {
 		return err
 	}
@@ -27,13 +27,13 @@ func (p *promotionProductUseCase) AddPromotionProduct(req *domain.PromotionProdu
 	return nil
 }
 
-func (p *promotionProductUseCase) EditPromotionProduct(req *domain.PromotionProductForm) error {
+func (uc *promotionProductUseCase) EditPromotionProduct(form *domain.PromotionProductForm) error {
 	promotion := &domain.PromotionProduct{
-		PromotionID: req.PromotionID,
-		ProductID:   req.ProductID,
+		PromotionID: form.PromotionID,
+		ProductID:   form.ProductID,
 	}
 
-	err := p.promotionProductRepo.EditPromotionProduct(promotion)
+	err := uc.promotionProductRepo.Edit(promotion)
 	if err != nil {
 		return err
 	}
@@ -41,13 +41,13 @@ func (p *promotionProductUseCase) EditPromotionProduct(req *domain.PromotionProd
 	return nil
 }
 
-func (p *promotionProductUseCase) GetPromotionProduct(req *domain.PromotionProductForm) ([]domain.PromotionProductReply, error) {
+func (uc *promotionProductUseCase) GetPromotionProduct(form *domain.PromotionProductForm) ([]domain.PromotionProductReply, error) {
 	promotion := &domain.PromotionProduct{
-		PromotionID: req.PromotionID,
-		ProductID:   req.ProductID,
+		PromotionID: form.PromotionID,
+		ProductID:   form.ProductID,
 	}
 
-	product, err := p.promotionProductRepo.GetPromotionProduct(promotion)
+	product, err := uc.promotionProductRepo.FindAllByID(promotion)
 	if err != nil {
 		return nil, err
 	}
@@ -56,8 +56,15 @@ func (p *promotionProductUseCase) GetPromotionProduct(req *domain.PromotionProdu
 
 	promotions := []domain.PromotionProductReply{}
 	for _, pro := range product {
+		products, err := uc.promotionProductRepo.GetOneByID(promotion)
+		if err != nil {
+			return nil, err
+		}
 
-		products, err := p.promotionProductRepo.GetProductById(promotion, pro.ProductID)
+		productId := &domain.Product{}
+		productId.ID = products.ProductID
+
+		productDetail, err := uc.productRepo.GetOneByID(productId)
 		if err != nil {
 			return nil, err
 		}
@@ -65,9 +72,9 @@ func (p *promotionProductUseCase) GetPromotionProduct(req *domain.PromotionProdu
 		promotions = append(promotions, domain.PromotionProductReply{
 			PromotionID: pro.PromotionID,
 			Product: append(dp, domain.Product{
-				Name:   products.Name,
-				Detail: products.Detail,
-				Price:  products.Price,
+				Name:   productDetail.Name,
+				Detail: productDetail.Detail,
+				Price:  productDetail.Price,
 			}),
 		})
 	}

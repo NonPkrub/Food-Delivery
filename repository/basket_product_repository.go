@@ -16,8 +16,8 @@ func NewBasketProductRepository(DB *gorm.DB) domain.BasketProductRepository {
 	return &basketProductRepository{DB: DB}
 }
 
-func (b *basketProductRepository) AddProductInBasket(req *domain.BasketProduct) error {
-	tx := b.DB.Create(req)
+func (br *basketProductRepository) Create(form *domain.BasketProduct) error {
+	tx := br.DB.Create(form)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return tx.Error
@@ -26,8 +26,8 @@ func (b *basketProductRepository) AddProductInBasket(req *domain.BasketProduct) 
 	return nil
 }
 
-func (b *basketProductRepository) EditProductInBasket(req *domain.BasketProduct) error {
-	tx := b.DB.Model(&domain.BasketProduct{}).Where("basket_id=?", req.BasketID).Updates(req)
+func (br *basketProductRepository) Edit(form *domain.BasketProduct) error {
+	tx := br.DB.Model(&domain.BasketProduct{}).Where("basket_id=?", form.BasketID).Updates(form)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return tx.Error
@@ -36,9 +36,8 @@ func (b *basketProductRepository) EditProductInBasket(req *domain.BasketProduct)
 	return nil
 }
 
-func (b *basketProductRepository) DeleteProductInBasket(req *domain.BasketProduct) error {
-
-	tx := b.DB.Where("basket_id=?", req.BasketID).Delete(req)
+func (br *basketProductRepository) Delete(form *domain.BasketProduct) error {
+	tx := br.DB.Where("basket_id=?", form.BasketID).Delete(form)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return tx.Error
@@ -47,10 +46,10 @@ func (b *basketProductRepository) DeleteProductInBasket(req *domain.BasketProduc
 	return nil
 }
 
-func (b *basketProductRepository) GetProductInBasket(req *domain.BasketProduct) ([]domain.BasketProduct, error) {
+func (br *basketProductRepository) FindAllByID(form *domain.BasketProduct) ([]domain.BasketProduct, error) {
 	var basketProducts []domain.BasketProduct
 
-	tx := b.DB.Preload(clause.Associations).Where("basket_id =?", req.BasketID).Find(&basketProducts)
+	tx := br.DB.Preload(clause.Associations).Where("basket_id =?", form.BasketID).Find(&basketProducts)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return nil, tx.Error
@@ -59,61 +58,35 @@ func (b *basketProductRepository) GetProductInBasket(req *domain.BasketProduct) 
 	return basketProducts, nil
 }
 
-func (b *basketProductRepository) GetProductById(req *domain.BasketProduct, id uint) (*domain.BasketProductPrice, error) {
-	var pro domain.Product
-	tx := b.DB.Find(&pro, id)
+func (br *basketProductRepository) GetOneById(form *domain.BasketProduct) (*domain.BasketProduct, error) {
+	var product domain.Product
+	tx := br.DB.Find(&product, form.ProductID)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return nil, tx.Error
 	}
 
-	product := &domain.BasketProductPrice{
-		BasketID: id,
-		// Product:  []domain.Product{pro},
-		Name:     pro.Name,
-		Detail:   pro.Detail,
-		Price:    pro.Price,
-		Quantity: req.Quantity,
-	}
-
-	return product, nil
+	return form, nil
 }
 
-func (b *basketProductRepository) GetPromotionBasket(bp *domain.BasketProduct, id uint) (*domain.BasketPromotionReply, error) {
-	var pro domain.Promotion
-	var product domain.BasketProduct
-
-	tx := b.DB.Preload(clause.Associations).Find(&pro, id)
+func (br *basketProductRepository) FindOne(form *domain.BasketProduct) (*domain.BasketProduct, error) {
+	tx := br.DB.Find(form, form.BasketID)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return nil, tx.Error
 	}
 
-	tx = b.DB.Find(&product, bp.BasketID)
-	if tx.Error != nil {
-		fmt.Println(tx.Error)
-		return nil, tx.Error
-	}
-
-	promotion := &domain.BasketPromotionReply{
-		PromotionID: id,
-		Code:        pro.Code,
-		Discount:    pro.Discount,
-		Name:        pro.Name,
-		ProductID:   product.ProductID, // Assuming product ID is required
-	}
-
-	return promotion, nil
+	return form, nil
 }
 
-func (b *basketProductRepository) GetPromotionByBasketId(bp *domain.BasketProduct) (uint, error) {
-	var pro domain.Basket
-	fmt.Println(bp.BasketID)
-	tx := b.DB.Find(&pro, bp.BasketID)
+func (br *basketProductRepository) GetPromotionByBasketID(form *domain.BasketProduct) (uint, error) {
+	var basket domain.Basket
+
+	tx := br.DB.Find(&basket, form.BasketID)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return 0, tx.Error
 	}
 
-	return *pro.PromotionID, nil
+	return *basket.PromotionID, nil
 }

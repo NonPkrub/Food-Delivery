@@ -16,9 +16,8 @@ func NewPromotionProductRepository(DB *gorm.DB) domain.PromotionProductRepositor
 	return &promotionProductRepository{DB: DB}
 }
 
-func (p *promotionProductRepository) AddPromotionProduct(req *domain.PromotionProduct) error {
-
-	tx := p.DB.Create(req)
+func (ppr *promotionProductRepository) Create(form *domain.PromotionProduct) error {
+	tx := ppr.DB.Create(form)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return tx.Error
@@ -27,9 +26,8 @@ func (p *promotionProductRepository) AddPromotionProduct(req *domain.PromotionPr
 	return nil
 }
 
-func (p *promotionProductRepository) EditPromotionProduct(req *domain.PromotionProduct) error {
-
-	tx := p.DB.Model(&domain.PromotionProduct{}).Where("promotion_id=?", req.PromotionID).Updates(req)
+func (ppr *promotionProductRepository) Edit(form *domain.PromotionProduct) error {
+	tx := ppr.DB.Model(&domain.PromotionProduct{}).Where("promotion_id=?", form.PromotionID).Updates(form)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return tx.Error
@@ -38,10 +36,9 @@ func (p *promotionProductRepository) EditPromotionProduct(req *domain.PromotionP
 	return nil
 }
 
-func (p *promotionProductRepository) GetPromotionProduct(req *domain.PromotionProduct) ([]domain.PromotionProduct, error) {
+func (ppr *promotionProductRepository) FindAllByID(form *domain.PromotionProduct) ([]domain.PromotionProduct, error) {
 	var promotionProduct []domain.PromotionProduct
-
-	tx := p.DB.Preload(clause.Associations).Where("promotion_id =?", req.PromotionID).Find(&promotionProduct)
+	tx := ppr.DB.Preload(clause.Associations).Where("promotion_id =?", form.PromotionID).Find(&promotionProduct)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return nil, tx.Error
@@ -50,23 +47,13 @@ func (p *promotionProductRepository) GetPromotionProduct(req *domain.PromotionPr
 	return promotionProduct, nil
 }
 
-func (p *promotionProductRepository) GetProductById(req *domain.PromotionProduct, id uint) (*domain.PromotionProductReplyId, error) {
-	var pro domain.Product
-
-	req.ProductID = id
-	tx := p.DB.Find(&pro, req.ProductID)
+func (ppr *promotionProductRepository) GetOneByID(form *domain.PromotionProduct) (*domain.PromotionProduct, error) {
+	var product domain.Product
+	tx := ppr.DB.Find(&product, form.ProductID)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return nil, tx.Error
 	}
 
-	promotion := &domain.PromotionProductReplyId{
-		PromotionID: req.PromotionID,
-		Name:        pro.Name,
-		Detail:      pro.Detail,
-		Price:       pro.Price,
-	}
-
-	return promotion, nil
-
+	return form, nil
 }

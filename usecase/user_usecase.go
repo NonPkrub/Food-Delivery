@@ -42,15 +42,15 @@ func containsLowercase(s string) bool {
 	return false
 }
 
-func (u *userUseCase) SignUp(d *domain.UserSignUpForm) (*domain.UserReply, error) {
+func (uc *userUseCase) SignUp(form *domain.UserSignUpForm) (*domain.UserReply, error) {
 
 	var err error
-	if len(d.Password) < 10 {
+	if len(form.Password) < 10 {
 		return nil, err
 	}
 
-	re := regexp.MustCompile("[^a-zA-Z0-9!@#$%^&*()_+]+")
-	password := re.ReplaceAllString(d.Password, "")
+	reCheckPassword := regexp.MustCompile("[^a-zA-Z0-9!@#$%^&*()_+]+")
+	password := reCheckPassword.ReplaceAllString(form.Password, "")
 
 	if !containsUppercase(password) {
 		return nil, err
@@ -60,7 +60,7 @@ func (u *userUseCase) SignUp(d *domain.UserSignUpForm) (*domain.UserReply, error
 		return nil, err
 	}
 
-	_, err = mail.ParseAddress(d.Email)
+	_, err = mail.ParseAddress(form.Email)
 	if err != nil {
 		return nil, err
 	}
@@ -71,36 +71,46 @@ func (u *userUseCase) SignUp(d *domain.UserSignUpForm) (*domain.UserReply, error
 		return nil, err
 	}
 
-	d.Password = string(hashed)
+	form.Password = string(hashed)
 
 	users := &domain.User{
-		FirstName:     d.FirstName,
-		LastName:      d.LastName,
-		Email:         d.Email,
-		Password:      d.Password,
-		PhoneNumber:   d.PhoneNumber,
-		NationalID:    d.NationalID,
-		Address:       d.Address,
-		DetailAddress: d.DetailAddress,
+		FirstName:     form.FirstName,
+		LastName:      form.LastName,
+		Email:         form.Email,
+		Password:      form.Password,
+		PhoneNumber:   form.PhoneNumber,
+		NationalID:    form.NationalID,
+		Address:       form.Address,
+		DetailAddress: form.DetailAddress,
 	}
 
-	user, err := u.userRepo.SignUp(users)
+	user, err := uc.userRepo.CreateUser(users)
 	if err != nil {
 		return nil, err
 	}
 
-	return user, nil
+	userReply := &domain.UserReply{
+		FirstName:     user.FirstName,
+		LastName:      user.LastName,
+		Email:         user.Email,
+		PhoneNumber:   user.PhoneNumber,
+		NationalID:    user.NationalID,
+		Address:       user.Address,
+		DetailAddress: user.DetailAddress,
+	}
+
+	return userReply, nil
 
 }
 
-func (u *userUseCase) Login(d *domain.UserLoginForm) (*domain.TokenReply, error) {
+func (uc *userUseCase) Login(form *domain.UserLoginForm) (*domain.TokenReply, error) {
 
 	var err error
-	if len(d.Password) < 10 {
+	if len(form.Password) < 10 {
 		return nil, err
 	}
 	re := regexp.MustCompile("[^a-zA-Z0-9!@#$%^&*()_+]+")
-	password := re.ReplaceAllString(d.Password, "")
+	password := re.ReplaceAllString(form.Password, "")
 
 	if !containsUppercase(password) {
 		return nil, err
@@ -110,22 +120,22 @@ func (u *userUseCase) Login(d *domain.UserLoginForm) (*domain.TokenReply, error)
 		return nil, err
 	}
 
-	_, err = mail.ParseAddress(d.Email)
+	_, err = mail.ParseAddress(form.Email)
 	if err != nil {
 		return nil, err
 	}
 
 	users := &domain.User{
-		Email:    d.Email,
-		Password: d.Password,
+		Email:    form.Email,
+		Password: form.Password,
 	}
 
-	user, err := u.userRepo.Login(users)
+	user, err := uc.userRepo.FindOne(users)
 	if err != nil {
 		return nil, err
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(d.Password))
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(form.Password))
 	if err != nil {
 		return nil, err
 	}
@@ -136,7 +146,7 @@ func (u *userUseCase) Login(d *domain.UserLoginForm) (*domain.TokenReply, error)
 	// }
 
 	claims := domain.UsersClaims{
-		Email: d.Email,
+		Email: form.Email,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
@@ -162,12 +172,42 @@ func (u *userUseCase) Login(d *domain.UserLoginForm) (*domain.TokenReply, error)
 
 }
 
-func (u *userUseCase) GetUserById(id uint) (*domain.UserReply, error) {
-	var d domain.User
-	user, err := u.userRepo.GetUserById(&d, id)
+func (uc *userUseCase) GetUserByID(id uint) (*domain.UserReply, error) {
+	var user domain.User
+	users, err := uc.userRepo.GetOneByID(&user)
 	if err != nil {
 		return nil, err
 	}
 
-	return user, nil
+	userReply := &domain.UserReply{
+		FirstName:     users.FirstName,
+		LastName:      users.LastName,
+		Email:         users.Email,
+		PhoneNumber:   users.PhoneNumber,
+		NationalID:    users.NationalID,
+		Address:       users.Address,
+		DetailAddress: users.DetailAddress,
+	}
+
+	return userReply, nil
+}
+
+func (uc *userUseCase) GetMe() (*domain.UserReply, error) {
+	var user domain.User
+	users, err := uc.userRepo.GetOneByID(&user)
+	if err != nil {
+		return nil, err
+	}
+
+	userReply := &domain.UserReply{
+		FirstName:     users.FirstName,
+		LastName:      users.LastName,
+		Email:         users.Email,
+		PhoneNumber:   users.PhoneNumber,
+		NationalID:    users.NationalID,
+		Address:       users.Address,
+		DetailAddress: users.DetailAddress,
+	}
+
+	return userReply, nil
 }

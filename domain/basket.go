@@ -39,7 +39,7 @@ type BasketUseCase interface {
 
 type BasketRepository interface {
 	//CreateBasket(b *Basket) error
-	AddPromotionBasket(b *Basket) error
-	DeletePromotionBasket(b *Basket) error
-	GetBasketByUserId(b *Basket) (*BasketReply, error)
+	Create(b *Basket) error
+	Delete(b *Basket) error
+	GetOneByID(b *Basket) (*Basket, error)
 }

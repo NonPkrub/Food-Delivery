@@ -33,8 +33,8 @@ type PromotionProductUseCase interface {
 }
 
 type PromotionProductRepository interface {
-	AddPromotionProduct(*PromotionProduct) error
-	EditPromotionProduct(*PromotionProduct) error
-	GetPromotionProduct(*PromotionProduct) ([]PromotionProduct, error)
-	GetProductById(p *PromotionProduct, id uint) (*PromotionProductReplyId, error)
+	Create(*PromotionProduct) error
+	Edit(*PromotionProduct) error
+	FindAllByID(*PromotionProduct) ([]PromotionProduct, error)
+	GetOneByID(p *PromotionProduct) (*PromotionProduct, error)
 }

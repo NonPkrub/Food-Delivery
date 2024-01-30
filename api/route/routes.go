@@ -20,7 +20,7 @@ func SetupRouter() *fiber.App {
 	productController := controller.NewProductController(productUseCase)
 
 	promotionRepo := repository.NewPromotionRepository(database.DB)
-	promotionUseCase := usecase.NewPromotionUseCase(promotionRepo)
+	promotionUseCase := usecase.NewPromotionUseCase(promotionRepo, productRepo)
 	promotionController := controller.NewPromotionController(promotionUseCase)
 
 	basketRepo := repository.NewBasketRepository(database.DB)
@@ -28,11 +28,11 @@ func SetupRouter() *fiber.App {
 	basketController := controller.NewBasketController(basketUseCase)
 
 	basketProductRepo := repository.NewBasketProductRepository(database.DB)
-	basketProductUseCase := usecase.NewBasketProductUseCase(basketProductRepo)
+	basketProductUseCase := usecase.NewBasketProductUseCase(basketProductRepo, promotionRepo, productRepo)
 	basketProductController := controller.NewBasketProductController(basketProductUseCase)
 
 	promotionProductRepo := repository.NewPromotionProductRepository(database.DB)
-	promotionProductUseCase := usecase.NewPromotionProductUseCase(promotionProductRepo)
+	promotionProductUseCase := usecase.NewPromotionProductUseCase(promotionProductRepo, productRepo)
 	promotionProductController := controller.NewPromotionProductController(promotionProductUseCase)
 
 	app := fiber.New()
@@ -54,7 +54,7 @@ func SetupRouter() *fiber.App {
 	v1.Post("promotion", middleware.JwtAuthentication(), promotionController.CreatePromotion)
 	v1.Put("promotion/:id", middleware.JwtAuthentication(), promotionController.EditPromotion)
 	v1.Delete("promotion/:id", middleware.JwtAuthentication(), promotionController.DeletePromotion)
-	v1.Post("promotion/search", middleware.JwtAuthentication(), promotionController.SearchPromotion)
+	//1.Post("promotion/search", middleware.JwtAuthentication(), promotionController.SearchPromotion)
 
 	//basket
 	//v1.Post("user/:id/basket", basketController.CreateBasket)
@@ -91,7 +91,7 @@ func SetupRouter() *fiber.App {
 	v2.Post("promotion", middleware.BasicAuth, promotionController.CreatePromotion)
 	v2.Put("promotion/:id", middleware.BasicAuth, promotionController.EditPromotion)
 	v2.Delete("promotion/:id", middleware.BasicAuth, promotionController.DeletePromotion)
-	v2.Post("promotion/search", middleware.BasicAuth, promotionController.SearchPromotion)
+	//v2.Post("promotion/search", middleware.BasicAuth, promotionController.SearchPromotion)
 
 	//basket
 	v2.Put("user/:id/basket/promotion", middleware.BasicAuth, basketController.AddPromotionBasket)

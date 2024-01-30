@@ -105,7 +105,7 @@ func (u *UserController) GetUserById(c *fiber.Ctx) error {
 		return err
 	}
 	fmt.Println(userInt)
-	res, err := u.userUseCase.GetUserById(uint(userInt))
+	res, err := u.userUseCase.GetUserByID(uint(userInt))
 
 	if err != nil {
 		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{

@@ -15,53 +15,40 @@ func NewProductRepository(DB *gorm.DB) domain.ProductRepository {
 	return &productRepository{DB: DB}
 }
 
-func (p *productRepository) GetAll() ([]domain.Product, error) {
-	pro := []domain.Product{}
-	tx := p.DB.Find(&pro)
+func (pr *productRepository) GetAll() ([]domain.Product, error) {
+	product := []domain.Product{}
+	tx := pr.DB.Find(product)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return nil, tx.Error
-	}
-
-	return pro, nil
-
-}
-
-func (p *productRepository) AddProduct(pro *domain.Product) (*domain.ProductReply, error) {
-
-	tx := p.DB.Create(pro)
-	if tx.Error != nil {
-		fmt.Println(tx.Error)
-		return nil, tx.Error
-	}
-
-	product := &domain.ProductReply{
-		Name:   pro.Name,
-		Detail: pro.Detail,
-		Price:  pro.Price,
 	}
 
 	return product, nil
+
 }
 
-func (p *productRepository) EditProduct(pro *domain.Product, id uint) (*domain.ProductReply, error) {
-
-	tx := p.DB.Model(&domain.Product{}).Where("id=?", id).Updates(pro)
+func (pr *productRepository) Create(form *domain.Product) (*domain.Product, error) {
+	tx := pr.DB.Create(form)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return nil, tx.Error
 	}
-	product := &domain.ProductReply{
-		Name:   pro.Name,
-		Detail: pro.Detail,
-		Price:  pro.Price,
-	}
 
-	return product, nil
+	return form, nil
 }
 
-func (p *productRepository) DeleteProduct(pro *domain.Product, id uint) error {
-	tx := p.DB.Where("id=?", id).Delete(pro)
+func (pr *productRepository) Edit(form *domain.Product) (*domain.Product, error) {
+	tx := pr.DB.Model(&domain.Product{}).Where("id=?", form.ID).Updates(form)
+	if tx.Error != nil {
+		fmt.Println(tx.Error)
+		return nil, tx.Error
+	}
+
+	return form, nil
+}
+
+func (pr *productRepository) Delete(form *domain.Product) error {
+	tx := pr.DB.Where("id=?", form.ID).Delete(form)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return tx.Error
@@ -70,19 +57,12 @@ func (p *productRepository) DeleteProduct(pro *domain.Product, id uint) error {
 	return nil
 }
 
-func (p *productRepository) GetProductById(pro *domain.Product, id uint) (*domain.ProductReply, error) {
-
-	tx := p.DB.First(pro, id)
+func (pr *productRepository) GetOneByID(form *domain.Product) (*domain.Product, error) {
+	tx := pr.DB.First(form, form.ID)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return nil, tx.Error
 	}
 
-	product := &domain.ProductReply{
-		Name:   pro.Name,
-		Detail: pro.Detail,
-		Price:  pro.Price,
-	}
-
-	return product, nil
+	return form, nil
 }

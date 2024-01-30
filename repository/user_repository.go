@@ -15,16 +15,16 @@ func NewUserRepository(DB *gorm.DB) domain.UserRepository {
 	return &userRepository{DB: DB}
 }
 
-func (u *userRepository) SignUp(d *domain.User) (*domain.UserReply, error) {
-	tx := u.DB.Begin()
-	if err := tx.Create(d).Error; err != nil {
+func (ur *userRepository) CreateUser(form *domain.User) (*domain.User, error) {
+	tx := ur.DB.Begin()
+	if err := tx.Create(form).Error; err != nil {
 		tx.Rollback()
 		fmt.Println(err)
 		return nil, err
 	}
 
 	var req *domain.Basket
-	if err := tx.Where("user_id = ?", d.ID).Where("promotion_id = ?", 0).Create(req).Error; err != nil {
+	if err := tx.Where("user_id = ?", form.ID).Where("promotion_id = ?", 0).Create(req).Error; err != nil {
 		tx.Rollback()
 		fmt.Println(err)
 		return nil, err
@@ -35,51 +35,35 @@ func (u *userRepository) SignUp(d *domain.User) (*domain.UserReply, error) {
 		return nil, err
 	}
 
-	user := &domain.UserReply{
-		FirstName:     d.FirstName,
-		LastName:      d.LastName,
-		Email:         d.Email,
-		PhoneNumber:   d.Password,
-		NationalID:    d.NationalID,
-		Address:       d.Address,
-		DetailAddress: d.DetailAddress,
-	}
-
-	return user, nil
-
+	return form, nil
 }
 
-func (u *userRepository) Login(d *domain.User) (*domain.UserLoginReply, error) {
-	tx := u.DB.Where("email =?", d.Email).Find(d)
+func (ur *userRepository) FindOne(form *domain.User) (*domain.User, error) {
+	tx := ur.DB.Where("email =?", form.Email).Find(form)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return nil, tx.Error
 	}
 
-	user := &domain.UserLoginReply{
-		Password: d.Password,
-	}
-
-	return user, nil
+	return form, nil
 }
 
-func (u *userRepository) GetUserById(d *domain.User, id uint) (*domain.UserReply, error) {
-
-	tx := u.DB.First(d, id)
+func (ur *userRepository) GetOneByID(form *domain.User) (*domain.User, error) {
+	tx := ur.DB.Find(form, form.ID)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return nil, tx.Error
 	}
 
-	user := &domain.UserReply{
-		FirstName:     d.FirstName,
-		LastName:      d.LastName,
-		Email:         d.Email,
-		PhoneNumber:   d.Password,
-		NationalID:    d.NationalID,
-		Address:       d.Address,
-		DetailAddress: d.DetailAddress,
+	return form, nil
+}
+
+func (ur *userRepository) GetOne(form *domain.User) (*domain.User, error) {
+	tx := ur.DB.Find(form, form.ID)
+	if tx.Error != nil {
+		fmt.Println(tx.Error)
+		return nil, tx.Error
 	}
 
-	return user, nil
+	return form, nil
 }
