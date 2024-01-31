@@ -16,8 +16,8 @@ func NewProductController(productUseCase domain.ProductUseCase) *ProductControll
 	return &ProductController{productUseCase: productUseCase}
 }
 
-func (p *ProductController) GetAll(c *fiber.Ctx) error {
-	res, err := p.productUseCase.GetAll()
+func (pc *ProductController) GetAll(c *fiber.Ctx) error {
+	result, err := pc.productUseCase.GetAll()
 	if err != nil {
 		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
 			"status":      fiber.ErrInternalServerError.Message,
@@ -31,24 +31,24 @@ func (p *ProductController) GetAll(c *fiber.Ctx) error {
 		"status":      "OK",
 		"status_code": fiber.StatusOK,
 		"message":     "",
-		"result":      res,
+		"result":      result,
 	})
 }
 
-func (p *ProductController) AddProduct(c *fiber.Ctx) error {
-	var req *domain.ProductForm
-	jsonData, err := json.Marshal(req)
+func (pc *ProductController) AddProduct(c *fiber.Ctx) error {
+	var form *domain.ProductForm
+	jsonData, err := json.Marshal(form)
 	if err != nil {
 		return err
 	}
 
-	var newReq domain.ProductForm
-	err = json.Unmarshal(jsonData, &newReq)
+	var newForm domain.ProductForm
+	err = json.Unmarshal(jsonData, &newForm)
 	if err != nil {
 		return err
 	}
 
-	if err := c.BodyParser(&newReq); err != nil {
+	if err := c.BodyParser(&newForm); err != nil {
 		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
 			"status":      fiber.ErrInternalServerError.Message,
 			"status_code": fiber.ErrInternalServerError.Code,
@@ -57,7 +57,7 @@ func (p *ProductController) AddProduct(c *fiber.Ctx) error {
 		})
 	}
 
-	res, err := p.productUseCase.AddProduct(&newReq)
+	result, err := pc.productUseCase.AddProduct(&newForm)
 	if err != nil {
 		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
 			"status":      fiber.ErrInternalServerError.Message,
@@ -71,19 +71,19 @@ func (p *ProductController) AddProduct(c *fiber.Ctx) error {
 		"status":      "OK",
 		"status_code": fiber.StatusOK,
 		"message":     "",
-		"result":      res,
+		"result":      result,
 	})
 }
 
-func (p *ProductController) EditProduct(c *fiber.Ctx) error {
-	var req *domain.ProductForm
-	jsonData, err := json.Marshal(req)
+func (pc *ProductController) EditProduct(c *fiber.Ctx) error {
+	var form *domain.ProductForm
+	jsonData, err := json.Marshal(form)
 	if err != nil {
 		return err
 	}
 
-	var newReq domain.ProductForm
-	err = json.Unmarshal(jsonData, &newReq)
+	var newForm domain.ProductForm
+	err = json.Unmarshal(jsonData, &newForm)
 	if err != nil {
 		return err
 	}
@@ -95,7 +95,7 @@ func (p *ProductController) EditProduct(c *fiber.Ctx) error {
 		return err
 	}
 
-	if err := c.BodyParser(&newReq); err != nil {
+	if err := c.BodyParser(&newForm); err != nil {
 		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
 			"status":      fiber.ErrInternalServerError.Message,
 			"status_code": fiber.ErrInternalServerError.Code,
@@ -104,7 +104,7 @@ func (p *ProductController) EditProduct(c *fiber.Ctx) error {
 		})
 	}
 
-	res, err := p.productUseCase.EditProduct(&newReq, uint(idInt))
+	result, err := pc.productUseCase.EditProduct(&newForm, uint(idInt))
 	if err != nil {
 		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
 			"status":      fiber.ErrInternalServerError.Message,
@@ -118,12 +118,11 @@ func (p *ProductController) EditProduct(c *fiber.Ctx) error {
 		"status":      "OK",
 		"status_code": fiber.StatusOK,
 		"message":     "",
-		"result":      res,
+		"result":      result,
 	})
 }
 
-func (p *ProductController) DeleteProduct(c *fiber.Ctx) error {
-
+func (pc *ProductController) DeleteProduct(c *fiber.Ctx) error {
 	id := c.Params("id")
 
 	idInt, err := strconv.ParseInt(id, 10, 64)
@@ -131,7 +130,7 @@ func (p *ProductController) DeleteProduct(c *fiber.Ctx) error {
 		return err
 	}
 
-	err = p.productUseCase.DeleteProduct(uint(idInt))
+	err = pc.productUseCase.DeleteProduct(uint(idInt))
 	if err != nil {
 		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
 			"status":      fiber.ErrInternalServerError.Message,

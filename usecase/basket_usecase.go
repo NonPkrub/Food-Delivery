@@ -5,32 +5,31 @@ import (
 )
 
 type basketUseCase struct {
-	basketRepo domain.BasketRepository
+	basketRepo           domain.BasketRepository
+	basketProductUseCase domain.BasketProductUseCase
 }
 
-func NewBasketUseCase(basketRepo domain.BasketRepository) domain.BasketUseCase {
-	return &basketUseCase{basketRepo: basketRepo}
+func NewBasketUseCase(basketRepo domain.BasketRepository, basketProductUseCase domain.BasketProductUseCase) domain.BasketUseCase {
+	return &basketUseCase{basketRepo: basketRepo, basketProductUseCase: basketProductUseCase}
 }
 
-// func (b *basketUseCase) CreateBasket(req *domain.BasketForm) error {
-
-// 	basket := &domain.Basket{
-// 		UserID:      req.UserID,
-// 		PromotionID: nil,
-// 	}
-
-// 	err := b.basketRepo.CreateBasket(basket)
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	return nil
-// }
-
-func (uc *basketUseCase) AddPromotionBasket(req *domain.BasketPromotionForm) error {
+func (uc *basketUseCase) CreateBasket(form *domain.BasketForm) error {
 	basket := &domain.Basket{
-		UserID:      req.UserID,
-		PromotionID: &req.PromotionID,
+		UserID: form.UserID,
+	}
+
+	err := uc.basketRepo.CreateOne(basket)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (uc *basketUseCase) AddPromotionBasket(form *domain.BasketPromotionForm) error {
+	basket := &domain.Basket{
+		UserID:      form.UserID,
+		PromotionID: &form.PromotionID,
 	}
 
 	err := uc.basketRepo.Create(basket)
@@ -69,9 +68,21 @@ func (uc *basketUseCase) GetBasketByUserId(id uint) (*domain.BasketReply, error)
 		promotionID = *userBasket.PromotionID
 	}
 
+	baskets := &domain.BasketProduct{
+		BasketID: userBasket.ID,
+	}
+
+	products, totalPrice, err := uc.basketProductUseCase.GetProductInBasket(baskets)
+	if err != nil {
+		return nil, err
+	}
+
 	basketReply := &domain.BasketReply{
-		UserID:      userBasket.UserID,
-		PromotionID: promotionID,
+		ID:            userBasket.ID,
+		UserID:        userBasket.UserID,
+		BasketProduct: products,
+		TotalPrice:    totalPrice,
+		PromotionID:   promotionID,
 	}
 
 	return basketReply, nil

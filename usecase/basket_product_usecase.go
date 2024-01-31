@@ -16,11 +16,11 @@ func NewBasketProductUseCase(basketProductRepo domain.BasketProductRepository, p
 	return &basketProductUseCase{basketProductRepo: basketProductRepo, promotionRepo: promotionRepo, productRepo: productRepo}
 }
 
-func (uc *basketProductUseCase) AddProductInBasket(req *domain.BasketProduct) error {
+func (uc *basketProductUseCase) AddProductInBasket(form *domain.BasketProduct) error {
 	basket := &domain.BasketProduct{
-		BasketID:  req.BasketID,
-		ProductID: req.ProductID,
-		Quantity:  req.Quantity,
+		BasketID:  form.BasketID,
+		ProductID: form.ProductID,
+		Quantity:  form.Quantity,
 	}
 
 	err := uc.basketProductRepo.Create(basket)
@@ -31,11 +31,11 @@ func (uc *basketProductUseCase) AddProductInBasket(req *domain.BasketProduct) er
 	return nil
 }
 
-func (uc *basketProductUseCase) EditProductInBasket(req *domain.BasketProduct) error {
+func (uc *basketProductUseCase) EditProductInBasket(form *domain.BasketProduct) error {
 	basket := &domain.BasketProduct{
-		BasketID:  req.BasketID,
-		ProductID: req.ProductID,
-		Quantity:  req.Quantity,
+		BasketID:  form.BasketID,
+		ProductID: form.ProductID,
+		Quantity:  form.Quantity,
 	}
 
 	err := uc.basketProductRepo.Edit(basket)
@@ -46,11 +46,10 @@ func (uc *basketProductUseCase) EditProductInBasket(req *domain.BasketProduct) e
 	return nil
 }
 
-func (uc *basketProductUseCase) DeleteProductInBasket(req *domain.BasketProduct) error {
+func (uc *basketProductUseCase) DeleteProductInBasket(form *domain.BasketProduct) error {
 	basket := &domain.BasketProduct{
-		BasketID:  req.BasketID,
-		ProductID: req.ProductID,
-		Quantity:  req.Quantity,
+		BasketID:  form.BasketID,
+		ProductID: form.ProductID,
 	}
 
 	err := uc.basketProductRepo.Delete(basket)
@@ -61,11 +60,11 @@ func (uc *basketProductUseCase) DeleteProductInBasket(req *domain.BasketProduct)
 	return nil
 }
 
-func (uc *basketProductUseCase) GetProductInBasket(req *domain.BasketProduct) ([]domain.BasketProductReply, float64, error) {
+func (uc *basketProductUseCase) GetProductInBasket(form *domain.BasketProduct) ([]domain.BasketProductReply, float64, error) {
 	basket := &domain.BasketProduct{
-		BasketID:  req.BasketID,
-		ProductID: req.ProductID,
-		Quantity:  req.Quantity,
+		BasketID:  form.BasketID,
+		ProductID: form.ProductID,
+		Quantity:  form.Quantity,
 	}
 
 	product, err := uc.basketProductRepo.FindAllByID(basket)
@@ -105,7 +104,6 @@ func (uc *basketProductUseCase) GetProductInBasket(req *domain.BasketProduct) ([
 		// }
 
 		products = append(products, domain.BasketProductReply{
-			BasketID: pro.BasketID,
 			Product: append(pb, domain.ProductForm{
 				Name:   productDetail.Name,
 				Detail: productDetail.Detail,
@@ -142,14 +140,14 @@ func (uc *basketProductUseCase) GetProductInBasket(req *domain.BasketProduct) ([
 		}
 	}
 
-	var totalPrices float64
+	totalPrices := float64(0)
 	totalPrices = totalProductPrice
 
 	return products, totalPrices, nil
 }
 
 func calculateTotalPrice(products float64, number uint) float64 {
-	var totalPrice float64
+	totalPrice := float64(0)
 	totalPrice = products * float64(number)
 
 	return totalPrice

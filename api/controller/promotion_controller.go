@@ -16,20 +16,20 @@ func NewPromotionController(promotionUseCase domain.PromotionUseCase) *Promotion
 	return &PromotionController{promotionUseCase: promotionUseCase}
 }
 
-func (p *PromotionController) CreatePromotion(c *fiber.Ctx) error {
-	var req *domain.PromotionForm
-	jsonData, err := json.Marshal(req)
+func (pc *PromotionController) CreatePromotion(c *fiber.Ctx) error {
+	var form *domain.PromotionForm
+	jsonData, err := json.Marshal(form)
 	if err != nil {
 		return err
 	}
 
-	var newReq domain.PromotionForm
-	err = json.Unmarshal(jsonData, &newReq)
+	var newForm domain.PromotionForm
+	err = json.Unmarshal(jsonData, &newForm)
 	if err != nil {
 		return err
 	}
 
-	if err := c.BodyParser(&newReq); err != nil {
+	if err := c.BodyParser(&newForm); err != nil {
 		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
 			"status":      fiber.ErrInternalServerError.Message,
 			"status_code": fiber.ErrInternalServerError.Code,
@@ -38,54 +38,7 @@ func (p *PromotionController) CreatePromotion(c *fiber.Ctx) error {
 		})
 	}
 
-	err = p.promotionUseCase.CreatePromotion(&newReq)
-	if err != nil {
-		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
-			"status":      fiber.ErrInternalServerError.Message,
-			"status_code": fiber.ErrInternalServerError.Code,
-			"message":     err.Error(),
-			"result":      nil,
-		})
-	}
-
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"status":      "OK",
-		"status_code": fiber.StatusOK,
-		"message":     "",
-		"result":      nil,
-	})
-}
-
-func (p *PromotionController) EditPromotion(c *fiber.Ctx) error {
-	var req *domain.PromotionForm
-	jsonData, err := json.Marshal(req)
-	if err != nil {
-		return err
-	}
-
-	var newReq domain.PromotionForm
-	err = json.Unmarshal(jsonData, &newReq)
-	if err != nil {
-		return err
-	}
-
-	id := c.Params("id")
-
-	idInt, err := strconv.ParseInt(id, 10, 64)
-	if err != nil {
-		return err
-	}
-
-	if err := c.BodyParser(&newReq); err != nil {
-		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
-			"status":      fiber.ErrInternalServerError.Message,
-			"status_code": fiber.ErrInternalServerError.Code,
-			"message":     err.Error(),
-			"result":      nil,
-		})
-	}
-
-	err = p.promotionUseCase.EditPromotion(&newReq, uint(idInt))
+	err = pc.promotionUseCase.CreatePromotion(&newForm)
 	if err != nil {
 		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
 			"status":      fiber.ErrInternalServerError.Message,
@@ -103,7 +56,19 @@ func (p *PromotionController) EditPromotion(c *fiber.Ctx) error {
 	})
 }
 
-func (p *PromotionController) DeletePromotion(c *fiber.Ctx) error {
+func (pc *PromotionController) EditPromotion(c *fiber.Ctx) error {
+	var form *domain.PromotionForm
+	jsonData, err := json.Marshal(form)
+	if err != nil {
+		return err
+	}
+
+	var newForm domain.PromotionForm
+	err = json.Unmarshal(jsonData, &newForm)
+	if err != nil {
+		return err
+	}
+
 	id := c.Params("id")
 
 	idInt, err := strconv.ParseInt(id, 10, 64)
@@ -111,7 +76,16 @@ func (p *PromotionController) DeletePromotion(c *fiber.Ctx) error {
 		return err
 	}
 
-	err = p.promotionUseCase.DeletePromotion(uint(idInt))
+	if err := c.BodyParser(&newForm); err != nil {
+		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
+			"status":      fiber.ErrInternalServerError.Message,
+			"status_code": fiber.ErrInternalServerError.Code,
+			"message":     err.Error(),
+			"result":      nil,
+		})
+	}
+
+	err = pc.promotionUseCase.EditPromotion(&newForm, uint(idInt))
 	if err != nil {
 		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
 			"status":      fiber.ErrInternalServerError.Message,
@@ -129,7 +103,7 @@ func (p *PromotionController) DeletePromotion(c *fiber.Ctx) error {
 	})
 }
 
-func (p *PromotionController) GetPromotionById(c *fiber.Ctx) error {
+func (pc *PromotionController) DeletePromotion(c *fiber.Ctx) error {
 	id := c.Params("id")
 
 	idInt, err := strconv.ParseInt(id, 10, 64)
@@ -137,7 +111,7 @@ func (p *PromotionController) GetPromotionById(c *fiber.Ctx) error {
 		return err
 	}
 
-	res, err := p.promotionUseCase.GetPromotionById(uint(idInt))
+	err = pc.promotionUseCase.DeletePromotion(uint(idInt))
 	if err != nil {
 		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
 			"status":      fiber.ErrInternalServerError.Message,
@@ -151,12 +125,19 @@ func (p *PromotionController) GetPromotionById(c *fiber.Ctx) error {
 		"status":      "OK",
 		"status_code": fiber.StatusOK,
 		"message":     "",
-		"result":      res,
+		"result":      nil,
 	})
 }
 
-func (p *PromotionController) GetAllPromotion(c *fiber.Ctx) error {
-	res, err := p.promotionUseCase.GetAllPromotion()
+func (pc *PromotionController) GetPromotionById(c *fiber.Ctx) error {
+	id := c.Params("id")
+
+	idInt, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+
+	result, err := pc.promotionUseCase.GetPromotionById(uint(idInt))
 	if err != nil {
 		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
 			"status":      fiber.ErrInternalServerError.Message,
@@ -170,7 +151,26 @@ func (p *PromotionController) GetAllPromotion(c *fiber.Ctx) error {
 		"status":      "OK",
 		"status_code": fiber.StatusOK,
 		"message":     "",
-		"result":      res,
+		"result":      result,
+	})
+}
+
+func (pc *PromotionController) GetAllPromotion(c *fiber.Ctx) error {
+	result, err := pc.promotionUseCase.GetAllPromotion()
+	if err != nil {
+		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
+			"status":      fiber.ErrInternalServerError.Message,
+			"status_code": fiber.ErrInternalServerError.Code,
+			"message":     err.Error(),
+			"result":      nil,
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"status":      "OK",
+		"status_code": fiber.StatusOK,
+		"message":     "",
+		"result":      result,
 	})
 }
 

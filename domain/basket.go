@@ -16,9 +16,11 @@ type BasketForm struct {
 }
 
 type BasketReply struct {
-	Model
-	UserID      uint `json:"user_id"`
-	PromotionID uint `json:"promotion_id"`
+	ID            uint                 `json:"id"`
+	UserID        uint                 `json:"user_id"`
+	BasketProduct []BasketProductReply `json:"basket_product_reply"`
+	PromotionID   uint                 `json:"promotion_id"`
+	TotalPrice    float64              `json:"total_price"`
 }
 
 type BasketPromotionForm struct {
@@ -31,14 +33,14 @@ func (p *Basket) TableName() string {
 }
 
 type BasketUseCase interface {
-	//CreateBasket(b *BasketForm) error
+	CreateBasket(b *BasketForm) error
 	AddPromotionBasket(b *BasketPromotionForm) error
 	DeletePromotionBasket(uint) error
 	GetBasketByUserId(uint) (*BasketReply, error)
 }
 
 type BasketRepository interface {
-	//CreateBasket(b *Basket) error
+	CreateOne(b *Basket) error
 	Create(b *Basket) error
 	Delete(b *Basket) error
 	GetOneByID(b *Basket) (*Basket, error)

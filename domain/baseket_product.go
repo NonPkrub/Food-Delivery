@@ -7,7 +7,6 @@ type BasketProduct struct {
 }
 
 type BasketProductReply struct {
-	BasketID uint          `json:"basket_id"`
 	Product  []ProductForm `json:"product"`
 	Quantity uint          `json:"quantity"`
 }
