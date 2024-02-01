@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -125,9 +126,13 @@ func (uc *UserController) GetUserById(c *fiber.Ctx) error {
 }
 
 func (uc *UserController) Me(c *fiber.Ctx) error {
-	token := c.Query("token")
+	myToken := strings.TrimPrefix(c.Get("Authorization"), "Bearer ")
+	if myToken == "" {
+		// Handle case where token is missing
+		return fiber.NewError(fiber.StatusUnauthorized, "Missing token")
+	}
 
-	result, err := uc.userUseCase.Me(token)
+	result, err := uc.userUseCase.Me(myToken)
 
 	if err != nil {
 		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{

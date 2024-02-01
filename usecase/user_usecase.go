@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"strconv"
 	"time"
+	"unicode"
 
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/uuid"
@@ -26,12 +27,10 @@ func NewUserUseCase(userRepo domain.UserRepository, basketUseCase domain.BasketU
 
 func containsUppercase(s string) bool {
 	for _, char := range s {
-		// if unicode.IsUpper(char) {
-		// 	return true
-		// }
-		if 'A' <= char && char <= 'Z' {
+		if unicode.IsUpper(char) {
 			return true
 		}
+
 	}
 
 	return false
@@ -39,45 +38,37 @@ func containsUppercase(s string) bool {
 
 func containsLowercase(s string) bool {
 	for _, char := range s {
-		// if unicode.IsLower(char) {
-		// 	return true
-		// }
-		if 'a' <= char && char <= 'z' {
+		if unicode.IsLower(char) {
 			return true
 		}
+
 	}
 
 	return false
 }
 
-func (uc *userUseCase) IsValidPassword(form *domain.UserLoginForm) error {
-	var err error
+func IsValidPassword(form *domain.UserLoginForm) error {
 	if len(form.Password) < 10 {
-		return err
-	}
-
-	_, err = mail.ParseAddress(form.Email)
-	if err != nil {
-		return err
-	}
-	email := &domain.User{
-		Email:    form.Email,
-		Password: form.Password,
-	}
-
-	validEmail, err := uc.userRepo.FindOne(email)
-	if validEmail.Email == email.Email {
-		return err
+		return errors.New("Password must be at least 10 characters")
 	}
 
 	nonASCII := regexp.MustCompile("[^\x00-\x7F]+")
-
 	if nonASCII.MatchString(form.Password) {
-		return err
+		return errors.New("Password accept only English character")
 	}
 
 	password := form.Password
-	if containsUppercase(password) || containsLowercase(password) {
+
+	if !containsUppercase(password) {
+		return errors.New("Password must contain the Upper case at least one character")
+	}
+
+	if !containsLowercase(password) {
+		return errors.New("Password must contain Lower case at least one character")
+	}
+
+	_, err := mail.ParseAddress(form.Email)
+	if err != nil {
 		return err
 	}
 
@@ -85,13 +76,23 @@ func (uc *userUseCase) IsValidPassword(form *domain.UserLoginForm) error {
 }
 
 func (uc *userUseCase) SignUp(form *domain.UserSignUpForm) (*domain.UserReply, error) {
-	var err error
 	forms := &domain.UserLoginForm{
 		Email:    form.Email,
 		Password: form.Password,
 	}
 
-	if uc.IsValidPassword(forms) != nil {
+	email := &domain.User{
+		Email:    form.Email,
+		Password: form.Password,
+	}
+
+	validEmail, err := uc.userRepo.FindOne(email)
+	if validEmail.Email == email.Email {
+		return nil, err
+	}
+
+	err = IsValidPassword(forms)
+	if err != nil {
 		return nil, err
 	}
 
@@ -146,6 +147,16 @@ func (uc *userUseCase) Login(form *domain.UserLoginForm) (*domain.TokenReply, er
 	users := &domain.User{
 		Email:    form.Email,
 		Password: form.Password,
+	}
+
+	forms := &domain.UserLoginForm{
+		Email:    form.Email,
+		Password: form.Password,
+	}
+
+	err := IsValidPassword(forms)
+	if err != nil {
+		return nil, err
 	}
 
 	user, err := uc.userRepo.FindOne(users)
@@ -206,8 +217,8 @@ func (uc *userUseCase) GetUserByID(id uint) (*domain.UserReply, error) {
 }
 
 func (uc *userUseCase) Me(myToken string) (*domain.UserReply, error) {
+	fmt.Println(myToken)
 	token, err := jwt.ParseWithClaims(myToken, &domain.UsersClaims{}, func(token *jwt.Token) (interface{}, error) {
-
 		return []byte(os.Getenv("JWT_SECRET")), nil
 	})
 	if err != nil {

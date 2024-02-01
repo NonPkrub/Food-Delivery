@@ -1,6 +1,8 @@
 package domain
 
-import "github.com/golang-jwt/jwt/v4"
+import (
+	"github.com/golang-jwt/jwt/v4"
+)
 
 type User struct {
 	Model
@@ -62,7 +64,6 @@ type UserUseCase interface {
 	Login(user *UserLoginForm) (*TokenReply, error)
 	GetUserByID(id uint) (*UserReply, error)
 	Me(string) (*UserReply, error)
-	IsValidPassword(user *UserLoginForm) error
 }
 
 type UserRepository interface {

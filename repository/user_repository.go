@@ -27,13 +27,14 @@ func (ur *userRepository) CreateUser(form *domain.User) (*domain.User, error) {
 }
 
 func (ur *userRepository) FindOne(form *domain.User) (*domain.User, error) {
-	tx := ur.DB.Where("email =?", form.Email).Find(form)
+	var user domain.User
+	tx := ur.DB.Where("email =?", form.Email).Find(&user)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return nil, tx.Error
 	}
 
-	return form, nil
+	return &user, nil
 }
 
 func (ur *userRepository) GetOneByID(form *domain.User) (*domain.User, error) {

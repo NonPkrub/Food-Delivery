@@ -26,8 +26,6 @@ func JwtAuthentication() fiber.Handler {
 			}
 			return []byte(os.Getenv("JWT_SECRET")), nil
 		})
-		fmt.Println(token)
-		fmt.Println(err)
 		if err != nil {
 			return c.Status(401).JSON(fiber.Map{
 				"message": "Unauthorized access token",
