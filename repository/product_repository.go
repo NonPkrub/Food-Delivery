@@ -48,7 +48,8 @@ func (pr *productRepository) Edit(form *domain.Product) (*domain.Product, error)
 }
 
 func (pr *productRepository) Delete(form *domain.Product) error {
-	tx := pr.DB.Where("id=?", form.ID).Delete(form)
+	var product domain.Product
+	tx := pr.DB.Where("id=?", form.ID).Delete(&product)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return tx.Error
@@ -58,7 +59,8 @@ func (pr *productRepository) Delete(form *domain.Product) error {
 }
 
 func (pr *productRepository) GetOneByID(form *domain.Product) (*domain.Product, error) {
-	tx := pr.DB.First(form, form.ID)
+	var product domain.Product
+	tx := pr.DB.First(&product, form.ID)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return nil, tx.Error

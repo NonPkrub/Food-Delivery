@@ -64,7 +64,8 @@ func (br *basketProductRepository) Create(form *domain.BasketProduct) error {
 }
 
 func (br *basketProductRepository) Edit(form *domain.BasketProduct) error {
-	tx := br.DB.Model(&domain.BasketProduct{}).Where("basket_id=? AND product_id ", form.BasketID, form.ProductID).Updates(form)
+	var basket domain.BasketProduct
+	tx := br.DB.Model(&domain.BasketProduct{}).Where("basket_id=? AND product_id ", form.BasketID, form.ProductID).Updates(&basket)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return tx.Error
@@ -74,7 +75,8 @@ func (br *basketProductRepository) Edit(form *domain.BasketProduct) error {
 }
 
 func (br *basketProductRepository) Delete(form *domain.BasketProduct) error {
-	tx := br.DB.Where("basket_id=? AND product_id", form.BasketID, form.ProductID).Delete(form)
+	var basket domain.BasketProduct
+	tx := br.DB.Where("basket_id=? AND product_id", form.BasketID, form.ProductID).Delete(&basket)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return tx.Error
@@ -107,13 +109,14 @@ func (br *basketProductRepository) GetOneById(form *domain.BasketProduct) (*doma
 }
 
 func (br *basketProductRepository) FindOne(form *domain.BasketProduct) (*domain.BasketProduct, error) {
-	tx := br.DB.Find(form, form.BasketID)
+	var product domain.BasketProduct
+	tx := br.DB.Find(&product, form.BasketID)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return nil, tx.Error
 	}
 
-	return form, nil
+	return &product, nil
 }
 
 func (br *basketProductRepository) GetPromotionByBasketID(form *domain.BasketProduct) (uint, error) {

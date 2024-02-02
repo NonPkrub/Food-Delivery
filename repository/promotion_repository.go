@@ -123,7 +123,8 @@ func (pr *promotionRepository) FindOne(form *domain.Promotion) (*domain.Promotio
 }
 
 func (pr *promotionRepository) GetByQuery(form *domain.Promotion) (*domain.Promotion, error) {
-	tx := pr.DB.Where("code =? OR name =?", form.Code, form.Name).Find(form)
+	var promotion domain.Promotion
+	tx := pr.DB.Where("code =? OR name =?", form.Code, form.Name).Find(&promotion)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return nil, tx.Error
