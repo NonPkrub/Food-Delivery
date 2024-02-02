@@ -42,7 +42,7 @@ type PromotionUseCase interface {
 	EditPromotion(p *PromotionForm, id uint) error
 	DeletePromotion(id uint) error
 	GetPromotionById(id uint) ([]PromotionProductReply, error)
-	GetAllPromotion() ([]Promotion, error)
+	GetAllPromotion(string, string) ([]Promotion, error)
 	//SearchPromotion(p *Promotion) ([]SearchPromotionReply, error)
 }
 
@@ -54,5 +54,7 @@ type PromotionRepository interface {
 	//SearchPromotion(p *Promotion) (*Promotion, error)
 	GetAll() ([]Promotion, error)
 	GetOneByID(p *PromotionProduct) (*PromotionProduct, error)
+	FindOneByID(p *PromotionProduct) (*PromotionProduct, error)
 	FindOne(p *Promotion) (*Promotion, error)
+	GetByQuery(p *Promotion) (*Promotion, error)
 }

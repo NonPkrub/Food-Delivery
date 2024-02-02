@@ -59,9 +59,9 @@ func SetupRouter() *fiber.App {
 
 	//basket
 	//v1.Post("user/:id/basket", basketController.CreateBasket)
-	v1.Put("user/:id/basket/promotion", middleware.JwtAuthentication(), basketController.AddPromotionBasket)
-	v1.Delete("user/:id/basket/promotion", middleware.JwtAuthentication(), basketController.DeletePromotionBasket)
-	v1.Get("user/:id/basket", middleware.JwtAuthentication(), basketController.GetBasketByUserId)
+	v1.Put("user/basket/promotion", middleware.JwtAuthentication(), basketController.AddPromotionBasket)
+	v1.Delete("user/basket/promotion", middleware.JwtAuthentication(), basketController.DeletePromotionBasket)
+	v1.Get("user/basket", middleware.JwtAuthentication(), basketController.GetBasketByUserId)
 
 	//basket_product
 	v1.Post("user/basket/:id/product", middleware.JwtAuthentication(), basketProductController.AddProductInBasket)

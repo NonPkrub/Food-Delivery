@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"Food-delivery/api/middleware"
 	"Food-delivery/domain"
 	"encoding/json"
 	"strconv"
@@ -54,7 +55,11 @@ func NewBasketController(basketUseCase domain.BasketUseCase) *BasketController {
 
 func (bc *BasketController) AddPromotionBasket(c *fiber.Ctx) error {
 	var form *domain.BasketPromotionForm
-	id := c.Params("id")
+
+	ID, err := middleware.UserClaim(c)
+	if err != nil {
+		return err
+	}
 
 	jsonData, err := json.Marshal(form)
 	if err != nil {
@@ -67,12 +72,12 @@ func (bc *BasketController) AddPromotionBasket(c *fiber.Ctx) error {
 		return err
 	}
 
-	idInt, err := strconv.ParseInt(id, 10, 64)
+	uintID, err := strconv.ParseUint(ID, 10, 64)
 	if err != nil {
 		return err
 	}
 
-	newForm.UserID = uint(idInt)
+	newForm.UserID = uint(uintID)
 
 	if err := c.BodyParser(&newForm); err != nil {
 		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
@@ -102,15 +107,17 @@ func (bc *BasketController) AddPromotionBasket(c *fiber.Ctx) error {
 }
 
 func (bc *BasketController) DeletePromotionBasket(c *fiber.Ctx) error {
-
-	id := c.Params("id")
-
-	idInt, err := strconv.ParseInt(id, 10, 64)
+	ID, err := middleware.UserClaim(c)
 	if err != nil {
 		return err
 	}
 
-	err = bc.basketUseCase.DeletePromotionBasket(uint(idInt))
+	uintID, err := strconv.ParseUint(ID, 10, 64)
+	if err != nil {
+		return err
+	}
+
+	err = bc.basketUseCase.DeletePromotionBasket(uint(uintID))
 	if err != nil {
 		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
 			"status":      fiber.ErrInternalServerError.Message,
@@ -129,15 +136,17 @@ func (bc *BasketController) DeletePromotionBasket(c *fiber.Ctx) error {
 }
 
 func (bc *BasketController) GetBasketByUserId(c *fiber.Ctx) error {
-
-	id := c.Params("id")
-
-	idInt, err := strconv.ParseInt(id, 10, 64)
+	ID, err := middleware.UserClaim(c)
 	if err != nil {
 		return err
 	}
 
-	basket, err := bc.basketUseCase.GetBasketByUserId(uint(idInt))
+	uintID, err := strconv.ParseUint(ID, 10, 64)
+	if err != nil {
+		return err
+	}
+
+	basket, err := bc.basketUseCase.GetBasketByUserId(uint(uintID))
 	if err != nil {
 		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
 			"status":      fiber.ErrInternalServerError.Message,

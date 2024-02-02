@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"Food-delivery/domain"
+	"fmt"
 )
 
 type basketUseCase struct {
@@ -73,6 +74,7 @@ func (uc *basketUseCase) GetBasketByUserId(id uint) (*domain.BasketReply, error)
 	}
 
 	products, totalPrice, err := uc.basketProductUseCase.GetProductInBasket(baskets)
+	fmt.Println(products, totalPrice)
 	if err != nil {
 		return nil, err
 	}

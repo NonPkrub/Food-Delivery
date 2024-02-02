@@ -3,6 +3,7 @@ package middleware
 import (
 	"Food-delivery/domain"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -45,6 +46,30 @@ func JwtAuthentication() fiber.Handler {
 			"result":      nil,
 		})
 	}
+}
+
+func UserClaim(c *fiber.Ctx) (string, error) {
+	myToken := strings.TrimPrefix(c.Get("Authorization"), "Bearer ")
+	if myToken == "" {
+		return "", fiber.NewError(fiber.StatusUnauthorized, "Missing token")
+	}
+
+	token, err := jwt.ParseWithClaims(myToken, &domain.UsersClaims{}, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("JWT_SECRET")), nil
+	})
+	if err != nil {
+		return "", err
+	}
+
+	if !token.Valid {
+		return "", errors.New("Invalid token")
+	}
+
+	claims := token.Claims.(*domain.UsersClaims)
+
+	userID := claims.RegisteredClaims.Subject
+
+	return userID, nil
 }
 
 // var users = map[string]string{

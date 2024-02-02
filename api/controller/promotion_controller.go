@@ -156,7 +156,10 @@ func (pc *PromotionController) GetPromotionById(c *fiber.Ctx) error {
 }
 
 func (pc *PromotionController) GetAllPromotion(c *fiber.Ctx) error {
-	result, err := pc.promotionUseCase.GetAllPromotion()
+	queryCode := c.Query("code")
+	queryName := c.Query("name")
+
+	result, err := pc.promotionUseCase.GetAllPromotion(queryCode, queryName)
 	if err != nil {
 		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
 			"status":      fiber.ErrInternalServerError.Message,

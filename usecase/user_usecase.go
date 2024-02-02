@@ -217,7 +217,6 @@ func (uc *userUseCase) GetUserByID(id uint) (*domain.UserReply, error) {
 }
 
 func (uc *userUseCase) Me(myToken string) (*domain.UserReply, error) {
-	fmt.Println(myToken)
 	token, err := jwt.ParseWithClaims(myToken, &domain.UsersClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(os.Getenv("JWT_SECRET")), nil
 	})

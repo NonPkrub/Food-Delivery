@@ -119,7 +119,9 @@ func (uc *basketProductUseCase) GetProductInBasket(form *domain.BasketProduct) (
 		if promotionId != 0 && !oneTimeUse {
 			promotion := &domain.PromotionProduct{}
 			promotion.PromotionID = promotionId
-			promotions, err := uc.promotionRepo.GetOneByID(promotion)
+			promotion.ProductID = pro.ProductID
+			promotions, err := uc.promotionRepo.FindOneByID(promotion)
+			fmt.Println(promotions)
 			if err != nil {
 				return nil, 0, err
 			}
@@ -131,11 +133,12 @@ func (uc *basketProductUseCase) GetProductInBasket(form *domain.BasketProduct) (
 				return nil, 0, err
 			}
 
+			fmt.Println(pro.ProductID, promotions.ProductID, pro.ProductID == promotions.ProductID)
+
 			if pro.ProductID == promotions.ProductID {
 				totalProductPrice = totalProductPrice - promotionDiscount.Discount
+				oneTimeUse = true
 			}
-
-			oneTimeUse = true
 
 		}
 	}

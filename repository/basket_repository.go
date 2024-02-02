@@ -61,5 +61,5 @@ func (br *basketRepository) GetOneByID(form *domain.Basket) (*domain.Basket, err
 		basket.PromotionID = form.PromotionID
 	}
 
-	return form, nil
+	return &basket, nil
 }

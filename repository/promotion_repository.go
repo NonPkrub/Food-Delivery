@@ -100,8 +100,30 @@ func (pr *promotionRepository) GetOneByID(form *domain.PromotionProduct) (*domai
 
 }
 
+func (pr *promotionRepository) FindOneByID(form *domain.PromotionProduct) (*domain.PromotionProduct, error) {
+	var promotion domain.PromotionProduct
+	tx := pr.DB.Where("promotion_id=? AND product_id=?", form.PromotionID, form.ProductID).Find(&promotion)
+	if tx.Error != nil {
+		fmt.Println(tx.Error)
+		return nil, tx.Error
+	}
+
+	return &promotion, nil
+
+}
+
 func (pr *promotionRepository) FindOne(form *domain.Promotion) (*domain.Promotion, error) {
 	tx := pr.DB.Find(form)
+	if tx.Error != nil {
+		fmt.Println(tx.Error)
+		return nil, tx.Error
+	}
+
+	return form, nil
+}
+
+func (pr *promotionRepository) GetByQuery(form *domain.Promotion) (*domain.Promotion, error) {
+	tx := pr.DB.Where("code =? OR name =?", form.Code, form.Name).Find(form)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return nil, tx.Error

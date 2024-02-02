@@ -96,13 +96,18 @@ func (uc *promotionUseCase) GetPromotionById(id uint) ([]domain.PromotionProduct
 	return promotions, nil
 }
 
-func (uc *promotionUseCase) GetAllPromotion() ([]domain.Promotion, error) {
-	promotions, err := uc.promotionRepo.GetAll()
+func (uc *promotionUseCase) GetAllPromotion(queryCode, queryName string) ([]domain.Promotion, error) {
+	if queryCode == "" && queryName == "" {
+		return uc.promotionRepo.GetAll()
+	}
+
+	form := &domain.Promotion{Code: queryCode, Name: queryName}
+	promotion, err := uc.promotionRepo.GetByQuery(form)
 	if err != nil {
 		return nil, err
 	}
 
-	return promotions, nil
+	return []domain.Promotion{*promotion}, nil
 }
 
 // func (uc *promotionUseCase) SearchPromotion(req *domain.Promotion) ([]domain.SearchPromotionReply, error) {

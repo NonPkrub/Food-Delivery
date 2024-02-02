@@ -128,7 +128,6 @@ func (uc *UserController) GetUserById(c *fiber.Ctx) error {
 func (uc *UserController) Me(c *fiber.Ctx) error {
 	myToken := strings.TrimPrefix(c.Get("Authorization"), "Bearer ")
 	if myToken == "" {
-		// Handle case where token is missing
 		return fiber.NewError(fiber.StatusUnauthorized, "Missing token")
 	}
 
