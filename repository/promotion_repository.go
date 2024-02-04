@@ -37,10 +37,27 @@ func (pr *promotionRepository) Edit(form *domain.Promotion) error {
 }
 
 func (pr *promotionRepository) Delete(form *domain.Promotion) error {
-	tx := pr.DB.Where("id=?", form.ID).Delete(form)
-	if tx.Error != nil {
-		fmt.Println(tx.Error)
-		return tx.Error
+	tx := pr.DB.Begin()
+
+	if err := tx.Error; err != nil {
+		return err
+	}
+
+	if err := tx.Where("promotion_id = ?", form.ID).Delete(&domain.PromotionProduct{}).Error; err != nil {
+		tx.Rollback()
+		fmt.Println("Error deleting promotion products:", err)
+		return err
+	}
+
+	if err := tx.Where("id = ?", form.ID).Delete(&domain.Promotion{}).Error; err != nil {
+		tx.Rollback()
+		fmt.Println("Error deleting promotion:", err)
+		return err
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		fmt.Println("Error committing transaction:", err)
+		return err
 	}
 
 	return nil
@@ -89,15 +106,14 @@ func (pr *promotionRepository) GetAll() ([]domain.Promotion, error) {
 // }
 
 func (pr *promotionRepository) GetOneByID(form *domain.PromotionProduct) (*domain.PromotionProduct, error) {
-	var promotion domain.Product
-	tx := pr.DB.Find(&promotion, form.ProductID)
+	var promotion domain.PromotionProduct
+	tx := pr.DB.Find(&promotion, form.PromotionID)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return nil, tx.Error
 	}
 
-	return form, nil
-
+	return &promotion, nil
 }
 
 func (pr *promotionRepository) FindOneByID(form *domain.PromotionProduct) (*domain.PromotionProduct, error) {

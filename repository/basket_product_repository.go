@@ -128,9 +128,9 @@ func (br *basketProductRepository) GetPromotionByBasketID(form *domain.BasketPro
 		return 0, tx.Error
 	}
 
-	if basket.PromotionID == nil {
+	if basket.PromotionID == 0 {
 		return 0, nil
 	}
 
-	return *basket.PromotionID, nil
+	return basket.PromotionID, nil
 }

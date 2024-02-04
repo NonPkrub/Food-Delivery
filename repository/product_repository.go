@@ -17,14 +17,13 @@ func NewProductRepository(DB *gorm.DB) domain.ProductRepository {
 
 func (pr *productRepository) GetAll() ([]domain.Product, error) {
 	product := []domain.Product{}
-	tx := pr.DB.Find(product)
+	tx := pr.DB.Find(&product)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return nil, tx.Error
 	}
 
 	return product, nil
-
 }
 
 func (pr *productRepository) Create(form *domain.Product) (*domain.Product, error) {
@@ -60,11 +59,12 @@ func (pr *productRepository) Delete(form *domain.Product) error {
 
 func (pr *productRepository) GetOneByID(form *domain.Product) (*domain.Product, error) {
 	var product domain.Product
+	fmt.Println(form.ID, form)
 	tx := pr.DB.First(&product, form.ID)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return nil, tx.Error
 	}
 
-	return form, nil
+	return &product, nil
 }

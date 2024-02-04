@@ -4,6 +4,7 @@ import (
 	"Food-delivery/api/middleware"
 	"Food-delivery/domain"
 	"encoding/json"
+	"fmt"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
@@ -72,7 +73,7 @@ func (bc *BasketController) AddPromotionBasket(c *fiber.Ctx) error {
 		return err
 	}
 
-	uintID, err := strconv.ParseUint(ID, 10, 64)
+	uintID, err := strconv.ParseInt(ID, 10, 64)
 	if err != nil {
 		return err
 	}
@@ -112,7 +113,7 @@ func (bc *BasketController) DeletePromotionBasket(c *fiber.Ctx) error {
 		return err
 	}
 
-	uintID, err := strconv.ParseUint(ID, 10, 64)
+	uintID, err := strconv.ParseInt(ID, 10, 64)
 	if err != nil {
 		return err
 	}
@@ -137,11 +138,12 @@ func (bc *BasketController) DeletePromotionBasket(c *fiber.Ctx) error {
 
 func (bc *BasketController) GetBasketByUserId(c *fiber.Ctx) error {
 	ID, err := middleware.UserClaim(c)
+	fmt.Println(ID)
 	if err != nil {
 		return err
 	}
 
-	uintID, err := strconv.ParseUint(ID, 10, 64)
+	uintID, err := strconv.ParseInt(ID, 10, 64)
 	if err != nil {
 		return err
 	}

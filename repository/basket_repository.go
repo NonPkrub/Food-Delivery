@@ -41,7 +41,7 @@ func (br *basketRepository) Delete(form *domain.Basket) error {
 	var basket domain.Basket
 	_ = br.DB.Find(&basket, form.UserID)
 
-	form.PromotionID = nil
+	form.PromotionID = 0
 
 	tx := br.DB.Save(&basket)
 	if tx.Error != nil {
@@ -60,7 +60,7 @@ func (br *basketRepository) GetOneByID(form *domain.Basket) (*domain.Basket, err
 		return nil, tx.Error
 	}
 
-	if form.PromotionID != nil {
+	if form.PromotionID != 0 {
 		basket.PromotionID = form.PromotionID
 	}
 

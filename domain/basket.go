@@ -4,7 +4,7 @@ type Basket struct {
 	Model
 	UserID      uint      `json:"user_id"`
 	User        User      `gorm:"foreignKey:UserID;references:ID"`
-	PromotionID *uint     `json:"promotion_id" gorm:"nullable"`
+	PromotionID uint      `json:"promotion_id" gorm:"nullable"`
 	Promotion   Promotion `gorm:"foreignKey:PromotionID;reference:ID"`
 
 	BasketProduct []BasketProduct `gorm:"foreignKey:BasketID"`

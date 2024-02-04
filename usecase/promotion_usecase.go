@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"Food-delivery/domain"
+	"fmt"
 )
 
 type promotionUseCase struct {
@@ -71,6 +72,7 @@ func (uc *promotionUseCase) GetPromotionById(id uint) ([]domain.PromotionProduct
 	promotions := []domain.PromotionProductReply{}
 	for _, pro := range product {
 		products, err := uc.promotionRepo.GetOneByID(promotion)
+		fmt.Println(products)
 		if err != nil {
 			return nil, err
 		}

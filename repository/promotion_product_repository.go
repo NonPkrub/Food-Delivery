@@ -48,12 +48,12 @@ func (ppr *promotionProductRepository) FindAllByID(form *domain.PromotionProduct
 }
 
 func (ppr *promotionProductRepository) GetOneByID(form *domain.PromotionProduct) (*domain.PromotionProduct, error) {
-	var product domain.Product
-	tx := ppr.DB.Find(&product, form.ProductID)
+	var product domain.PromotionProduct
+	tx := ppr.DB.Find(&product, form.PromotionID)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return nil, tx.Error
 	}
 
-	return form, nil
+	return &product, nil
 }

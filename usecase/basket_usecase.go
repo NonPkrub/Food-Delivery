@@ -30,7 +30,7 @@ func (uc *basketUseCase) CreateBasket(form *domain.BasketForm) error {
 func (uc *basketUseCase) AddPromotionBasket(form *domain.BasketPromotionForm) error {
 	basket := &domain.Basket{
 		UserID:      form.UserID,
-		PromotionID: &form.PromotionID,
+		PromotionID: form.PromotionID,
 	}
 
 	err := uc.basketRepo.Create(basket)
@@ -65,8 +65,8 @@ func (uc *basketUseCase) GetBasketByUserId(id uint) (*domain.BasketReply, error)
 	}
 
 	var promotionID uint
-	if userBasket.PromotionID != nil {
-		promotionID = *userBasket.PromotionID
+	if userBasket.PromotionID != 0 {
+		promotionID = userBasket.PromotionID
 	}
 
 	baskets := &domain.BasketProduct{

@@ -50,6 +50,7 @@ func JwtAuthentication() fiber.Handler {
 
 func UserClaim(c *fiber.Ctx) (string, error) {
 	myToken := strings.TrimPrefix(c.Get("Authorization"), "Bearer ")
+	fmt.Println(myToken)
 	if myToken == "" {
 		return "", fiber.NewError(fiber.StatusUnauthorized, "Missing token")
 	}
@@ -68,6 +69,7 @@ func UserClaim(c *fiber.Ctx) (string, error) {
 	claims := token.Claims.(*domain.UsersClaims)
 
 	userID := claims.RegisteredClaims.Subject
+	fmt.Println(userID)
 
 	return userID, nil
 }
