@@ -3,6 +3,7 @@ package controller
 import (
 	"Food-delivery/domain"
 	"encoding/json"
+	"fmt"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
@@ -18,8 +19,6 @@ func NewBasketProductController(basketProductUseCase domain.BasketProductUseCase
 
 func (bpc *BasketProductController) AddProductInBasket(c *fiber.Ctx) error {
 	var form *domain.BasketProduct
-	id := c.Params("id")
-
 	jsonData, err := json.Marshal(form)
 	if err != nil {
 		return err
@@ -31,12 +30,15 @@ func (bpc *BasketProductController) AddProductInBasket(c *fiber.Ctx) error {
 		return err
 	}
 
+	id := c.Params("id")
 	idInt, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
 		return err
 	}
 
 	newForm.BasketID = uint(idInt)
+
+	fmt.Println(newForm)
 
 	if err := c.BodyParser(&newForm); err != nil {
 		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
