@@ -61,6 +61,7 @@ func (uc *basketProductUseCase) DeleteProductInBasket(form *domain.BasketProduct
 }
 
 func (uc *basketProductUseCase) GetProductInBasket(form *domain.BasketProduct) ([]domain.BasketProductReply, float64, error) {
+
 	basket := &domain.BasketProduct{
 		BasketID:  form.BasketID,
 		ProductID: form.ProductID,
@@ -115,13 +116,11 @@ func (uc *basketProductUseCase) GetProductInBasket(form *domain.BasketProduct) (
 		totalPrice := calculateTotalPrice(productDetail.Price, pro.Quantity)
 		totalProductPrice += totalPrice
 
-		fmt.Println(!oneTimeUse)
 		if promotionId != 0 && !oneTimeUse {
 			promotion := &domain.PromotionProduct{}
 			promotion.PromotionID = promotionId
 			promotion.ProductID = pro.ProductID
 			promotions, err := uc.promotionRepo.FindOneByID(promotion)
-			fmt.Println(promotions)
 			if err != nil {
 				return nil, 0, err
 			}

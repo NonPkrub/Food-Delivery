@@ -3,7 +3,6 @@ package controller
 import (
 	"Food-delivery/domain"
 	"encoding/json"
-	"fmt"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
@@ -37,8 +36,6 @@ func (bpc *BasketProductController) AddProductInBasket(c *fiber.Ctx) error {
 	}
 
 	newForm.BasketID = uint(idInt)
-
-	fmt.Println(newForm)
 
 	if err := c.BodyParser(&newForm); err != nil {
 		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
@@ -137,6 +134,15 @@ func (bpc *BasketProductController) DeleteProductInBasket(c *fiber.Ctx) error {
 	}
 
 	newForm.BasketID = uint(idInt)
+
+	if err := c.BodyParser(&newForm); err != nil {
+		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
+			"status":      fiber.ErrInternalServerError.Message,
+			"status_code": fiber.ErrInternalServerError.Code,
+			"message":     err.Error(),
+			"result":      nil,
+		})
+	}
 
 	err = bpc.basketProductUseCase.DeleteProductInBasket(&newForm)
 	if err != nil {

@@ -27,8 +27,7 @@ func (br *basketRepository) CreateOne(form *domain.Basket) error {
 }
 
 func (br *basketRepository) Create(form *domain.Basket) error {
-	var basket domain.Basket
-	tx := br.DB.Model(&domain.Basket{}).Where("user_id=?", form.UserID).Updates(&basket)
+	tx := br.DB.Model(&domain.Basket{}).Where("user_id=?", form.UserID).Updates(form)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return tx.Error
@@ -38,12 +37,7 @@ func (br *basketRepository) Create(form *domain.Basket) error {
 }
 
 func (br *basketRepository) Delete(form *domain.Basket) error {
-	var basket domain.Basket
-	_ = br.DB.Find(&basket, form.UserID)
-
-	form.PromotionID = 0
-
-	tx := br.DB.Save(&basket)
+	tx := br.DB.Model(&domain.Basket{}).Where("user_id=?", form.UserID).Update("promotion_id", nil)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return tx.Error
@@ -54,7 +48,7 @@ func (br *basketRepository) Delete(form *domain.Basket) error {
 
 func (br *basketRepository) GetOneByID(form *domain.Basket) (*domain.Basket, error) {
 	var basket domain.Basket
-	tx := br.DB.Find(&basket, form.UserID)
+	tx := br.DB.Where("user_id=?", form.UserID).Find(&basket)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return nil, tx.Error

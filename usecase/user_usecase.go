@@ -86,12 +86,12 @@ func (uc *userUseCase) SignUp(form *domain.UserSignUpForm) (*domain.UserReply, e
 		Password: form.Password,
 	}
 
-	validEmail, err := uc.userRepo.FindOne(email)
+	validEmail, _ := uc.userRepo.FindOne(email)
 	if validEmail.Email == email.Email {
-		return nil, err
+		return nil, errors.New("This email already exists")
 	}
 
-	err = IsValidPassword(forms)
+	err := IsValidPassword(forms)
 	if err != nil {
 		return nil, err
 	}

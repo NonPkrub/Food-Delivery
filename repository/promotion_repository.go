@@ -107,7 +107,7 @@ func (pr *promotionRepository) GetAll() ([]domain.Promotion, error) {
 
 func (pr *promotionRepository) GetOneByID(form *domain.PromotionProduct) (*domain.PromotionProduct, error) {
 	var promotion domain.PromotionProduct
-	tx := pr.DB.Find(&promotion, form.PromotionID)
+	tx := pr.DB.Where("promotion_id=? AND product_id=? ", form.PromotionID, form.ProductID).Find(&promotion)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return nil, tx.Error

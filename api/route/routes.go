@@ -38,7 +38,7 @@ func SetupRouter() *fiber.App {
 	app := fiber.New()
 	v1 := app.Group("api/v1")
 	//user
-	v1.Get("user/:id", middleware.JwtAuthentication(), userController.GetUserById)
+	//v1.Get("user/:id", middleware.JwtAuthentication(), userController.GetUserById)
 	v1.Post("sign_up", userController.SignUp)
 	v1.Post("login", userController.Login)
 	v1.Get("me", middleware.JwtAuthentication(), userController.Me)
@@ -55,7 +55,6 @@ func SetupRouter() *fiber.App {
 	v1.Post("promotion", middleware.JwtAuthentication(), promotionController.CreatePromotion)
 	v1.Put("promotion/:id", middleware.JwtAuthentication(), promotionController.EditPromotion)
 	v1.Delete("promotion/:id", middleware.JwtAuthentication(), promotionController.DeletePromotion)
-	//1.Post("promotion/search", middleware.JwtAuthentication(), promotionController.SearchPromotion)
 
 	//basket
 	//v1.Post("user/:id/basket", basketController.CreateBasket)
@@ -67,48 +66,10 @@ func SetupRouter() *fiber.App {
 	v1.Post("user/basket/:id/product", middleware.JwtAuthentication(), basketProductController.AddProductInBasket)
 	v1.Put("user/basket/:id/product", middleware.JwtAuthentication(), basketProductController.EditProductInBasket)
 	v1.Delete("user/basket/:id/product", middleware.JwtAuthentication(), basketProductController.DeleteProductInBasket)
-	//v1.Get("user/basket/:id/product", middleware.JwtAuthentication(), basketProductController.GetProductInBasket)
 
 	//promotion_product
 	v1.Post("promotion/product", middleware.JwtAuthentication(), promotionProductController.AddPromotionProduct)
 	v1.Put("promotion/:id/product", middleware.JwtAuthentication(), promotionProductController.EditPromotionProduct)
-	v1.Get("promotion/:id/product", middleware.JwtAuthentication(), promotionProductController.GetPromotionProduct)
-
-	// v2 := app.Group("api/v2")
-	// //user
-	// v2.Get("user/:id", middleware.BasicAuth, userController.GetUserById)
-	// v2.Post("sign_up", userController.SignUp)
-	// v2.Post("login", userController.Login)
-
-	// //product
-	// v2.Get("product", middleware.BasicAuth, productController.GetAll)
-	// v2.Post("product", middleware.BasicAuth, productController.AddProduct)
-	// v2.Put("product/:id", middleware.BasicAuth, productController.EditProduct)
-	// v2.Delete("product/:id", middleware.BasicAuth, productController.DeleteProduct)
-
-	// //promotion
-	// v2.Get("promotion", middleware.BasicAuth, promotionController.GetAllPromotion)
-	// v2.Get("promotion/:id", middleware.BasicAuth, promotionController.GetPromotionById)
-	// v2.Post("promotion", middleware.BasicAuth, promotionController.CreatePromotion)
-	// v2.Put("promotion/:id", middleware.BasicAuth, promotionController.EditPromotion)
-	// v2.Delete("promotion/:id", middleware.BasicAuth, promotionController.DeletePromotion)
-	// //v2.Post("promotion/search", middleware.BasicAuth, promotionController.SearchPromotion)
-
-	// //basket
-	// v2.Put("user/:id/basket/promotion", middleware.BasicAuth, basketController.AddPromotionBasket)
-	// v2.Delete("user/:id/basket/promotion", middleware.BasicAuth, basketController.DeletePromotionBasket)
-	// v2.Get("user/:id/basket", middleware.BasicAuth, basketController.GetBasketByUserId)
-
-	// //basket_product
-	// v2.Post("user/basket/:id/product", middleware.BasicAuth, basketProductController.AddProductInBasket)
-	// v2.Put("user/basket/:id/product", middleware.BasicAuth, basketProductController.EditProductInBasket)
-	// v2.Delete("user/basket/:id/product", middleware.BasicAuth, basketProductController.DeleteProductInBasket)
-	// v2.Get("user/basket/:id/product", middleware.BasicAuth, basketProductController.GetProductInBasket)
-
-	// //promotion_product
-	// v2.Post("promotion/product", middleware.BasicAuth, promotionProductController.AddPromotionProduct)
-	// v2.Put("promotion/:id/product", middleware.BasicAuth, promotionProductController.EditPromotionProduct)
-	// v2.Get("promotion/:id/product", middleware.BasicAuth, promotionProductController.GetPromotionProduct)
 
 	return app
 }

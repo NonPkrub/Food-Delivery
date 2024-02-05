@@ -43,7 +43,8 @@ func (uc *basketUseCase) AddPromotionBasket(form *domain.BasketPromotionForm) er
 
 func (uc *basketUseCase) DeletePromotionBasket(id uint) error {
 	basket := &domain.Basket{
-		UserID: id,
+		UserID:      id,
+		PromotionID: 0,
 	}
 
 	err := uc.basketRepo.Delete(basket)

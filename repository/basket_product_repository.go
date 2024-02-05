@@ -18,26 +18,8 @@ func NewBasketProductRepository(DB *gorm.DB) domain.BasketProductRepository {
 }
 
 func (br *basketProductRepository) Create(form *domain.BasketProduct) error {
-
-	//upsert
-	// tx := br.DB.Clauses(clause.OnConflict{UpdateAll: true}).Create(form)
-	// if tx.Error != nil {
-	// 	fmt.Println(tx.Error)
-	// 	return tx.Error
-	// }
-
-	// return nil
-
-	// tx := br.DB.Create(form)
-	// if tx.Error != nil {
-	// 	fmt.Println(tx.Error)
-	// 	return tx.Error
-	// }
-
-	// return nil
-
-	var record domain.BasketProduct
-	res := br.DB.Where("basket_id=? AND product_id =? ", form.BasketID, form.ProductID).Find(&record)
+	var record *domain.BasketProduct
+	res := br.DB.Model(&record).Where("basket_id=? AND product_id =? ", form.BasketID, form.ProductID).First(&record)
 	if res.Error != nil && !errors.Is(res.Error, gorm.ErrRecordNotFound) {
 		fmt.Println(res.Error)
 		return res.Error
@@ -52,7 +34,7 @@ func (br *basketProductRepository) Create(form *domain.BasketProduct) error {
 
 	} else {
 		updateQuantity := record.Quantity + form.Quantity
-		tx := br.DB.Model(&domain.BasketProduct{}).Where("basket_id=? AND product_id =? AND quantity=? ", form.BasketID, form.ProductID, updateQuantity).Updates(form)
+		tx := br.DB.Model(&record).Where("basket_id=? AND product_id =?", form.BasketID, form.ProductID).Update("quantity", updateQuantity)
 		if tx.Error != nil {
 			fmt.Println(tx.Error)
 			return tx.Error
@@ -64,7 +46,7 @@ func (br *basketProductRepository) Create(form *domain.BasketProduct) error {
 
 func (br *basketProductRepository) Edit(form *domain.BasketProduct) error {
 	var basket domain.BasketProduct
-	tx := br.DB.Model(&domain.BasketProduct{}).Where("basket_id=? AND product_id=? ", form.BasketID, form.ProductID).Updates(&basket)
+	tx := br.DB.Model(&basket).Where("basket_id=? AND product_id=? ", form.BasketID, form.ProductID).Updates(form)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return tx.Error
@@ -75,7 +57,7 @@ func (br *basketProductRepository) Edit(form *domain.BasketProduct) error {
 
 func (br *basketProductRepository) Delete(form *domain.BasketProduct) error {
 	var basket domain.BasketProduct
-	tx := br.DB.Where("basket_id=? AND product_id =?", form.BasketID, form.ProductID).Delete(&basket)
+	tx := br.DB.Model(&basket).Where("basket_id=? AND product_id =?", form.BasketID, form.ProductID).Delete(form)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return tx.Error

@@ -29,7 +29,7 @@ func (p *PromotionProduct) TableName() string {
 type PromotionProductUseCase interface {
 	AddPromotionProduct(*PromotionProductForm) error
 	EditPromotionProduct(*PromotionProductForm) error
-	GetPromotionProduct(*PromotionProductForm) ([]PromotionProductReply, error)
+	//GetPromotionProduct(*PromotionProductForm) ([]PromotionProductReply, error)
 }
 
 type PromotionProductRepository interface {

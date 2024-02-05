@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"Food-delivery/domain"
-	"fmt"
 )
 
 type promotionProductUseCase struct {
@@ -42,46 +41,46 @@ func (uc *promotionProductUseCase) EditPromotionProduct(form *domain.PromotionPr
 	return nil
 }
 
-func (uc *promotionProductUseCase) GetPromotionProduct(form *domain.PromotionProductForm) ([]domain.PromotionProductReply, error) {
-	promotion := &domain.PromotionProduct{
-		PromotionID: form.PromotionID,
-		ProductID:   form.ProductID,
-	}
+// func (uc *promotionProductUseCase) GetPromotionProduct(form *domain.PromotionProductForm) ([]domain.PromotionProductReply, error) {
+// 	promotion := &domain.PromotionProduct{
+// 		PromotionID: form.PromotionID,
+// 		ProductID:   form.ProductID,
+// 	}
 
-	product, err := uc.promotionProductRepo.FindAllByID(promotion)
-	if err != nil {
-		return nil, err
-	}
+// 	product, err := uc.promotionProductRepo.FindAllByID(promotion)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	dp := []domain.Product{}
+// 	dp := []domain.Product{}
 
-	promotions := []domain.PromotionProductReply{}
-	for _, pro := range product {
-		products, err := uc.promotionProductRepo.GetOneByID(promotion)
-		if err != nil {
-			return nil, err
-		}
+// 	promotions := []domain.PromotionProductReply{}
+// 	for _, pro := range product {
+// 		products, err := uc.promotionProductRepo.GetOneByID(promotion)
+// 		if err != nil {
+// 			return nil, err
+// 		}
 
-		fmt.Println(products, products.ProductID)
+// 		fmt.Println(products, products.ProductID)
 
-		productId := &domain.Product{}
-		productId.ID = products.ProductID
+// 		productId := &domain.Product{}
+// 		productId.ID = products.ProductID
 
-		productDetail, err := uc.productRepo.GetOneByID(productId)
-		fmt.Println(productDetail, productId)
-		if err != nil {
-			return nil, err
-		}
+// 		productDetail, err := uc.productRepo.GetOneByID(productId)
+// 		fmt.Println(productDetail, productId)
+// 		if err != nil {
+// 			return nil, err
+// 		}
 
-		promotions = append(promotions, domain.PromotionProductReply{
-			PromotionID: pro.PromotionID,
-			Product: append(dp, domain.Product{
-				Name:   productDetail.Name,
-				Detail: productDetail.Detail,
-				Price:  productDetail.Price,
-			}),
-		})
-	}
+// 		promotions = append(promotions, domain.PromotionProductReply{
+// 			PromotionID: pro.PromotionID,
+// 			Product: append(dp, domain.Product{
+// 				Name:   productDetail.Name,
+// 				Detail: productDetail.Detail,
+// 				Price:  productDetail.Price,
+// 			}),
+// 		})
+// 	}
 
-	return promotions, nil
-}
+// 	return promotions, nil
+// }

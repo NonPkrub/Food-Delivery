@@ -59,7 +59,6 @@ func (pr *productRepository) Delete(form *domain.Product) error {
 
 func (pr *productRepository) GetOneByID(form *domain.Product) (*domain.Product, error) {
 	var product domain.Product
-	fmt.Println(form.ID, form)
 	tx := pr.DB.First(&product, form.ID)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)

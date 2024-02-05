@@ -94,40 +94,40 @@ func (ppc *PromotionProductController) EditPromotionProduct(c *fiber.Ctx) error 
 	})
 }
 
-func (ppc *PromotionProductController) GetPromotionProduct(c *fiber.Ctx) error {
-	var form domain.PromotionProductForm
-	id := c.Params("id")
+// func (ppc *PromotionProductController) GetPromotionProduct(c *fiber.Ctx) error {
+// 	var form domain.PromotionProductForm
+// 	id := c.Params("id")
 
-	idInt, err := strconv.ParseInt(id, 10, 64)
-	if err != nil {
-		return err
-	}
+// 	idInt, err := strconv.ParseInt(id, 10, 64)
+// 	if err != nil {
+// 		return err
+// 	}
 
-	form.PromotionID = uint(idInt)
+// 	form.PromotionID = uint(idInt)
 
-	// if err := c.BodyParser(&req); err != nil {
-	// 	return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
-	// 		"status":      fiber.ErrInternalServerError.Message,
-	// 		"status_code": fiber.ErrInternalServerError.Code,
-	// 		"message":     err.Error(),
-	// 		"result":      nil,
-	// 	})
-	// }
+// 	// if err := c.BodyParser(&req); err != nil {
+// 	// 	return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
+// 	// 		"status":      fiber.ErrInternalServerError.Message,
+// 	// 		"status_code": fiber.ErrInternalServerError.Code,
+// 	// 		"message":     err.Error(),
+// 	// 		"result":      nil,
+// 	// 	})
+// 	// }
 
-	result, err := ppc.promotionProductUseCase.GetPromotionProduct(&form)
-	if err != nil {
-		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
-			"status":      fiber.ErrInternalServerError.Message,
-			"status_code": fiber.ErrInternalServerError.Code,
-			"message":     err.Error(),
-			"result":      nil,
-		})
-	}
+// 	result, err := ppc.promotionProductUseCase.GetPromotionProduct(&form)
+// 	if err != nil {
+// 		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
+// 			"status":      fiber.ErrInternalServerError.Message,
+// 			"status_code": fiber.ErrInternalServerError.Code,
+// 			"message":     err.Error(),
+// 			"result":      nil,
+// 		})
+// 	}
 
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"status":      "OK",
-		"status_code": fiber.StatusOK,
-		"message":     "",
-		"result":      result,
-	})
-}
+// 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+// 		"status":      "OK",
+// 		"status_code": fiber.StatusOK,
+// 		"message":     "",
+// 		"result":      result,
+// 	})
+// }

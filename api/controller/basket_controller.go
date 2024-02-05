@@ -4,7 +4,6 @@ import (
 	"Food-delivery/api/middleware"
 	"Food-delivery/domain"
 	"encoding/json"
-	"fmt"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
@@ -138,7 +137,6 @@ func (bc *BasketController) DeletePromotionBasket(c *fiber.Ctx) error {
 
 func (bc *BasketController) GetBasketByUserId(c *fiber.Ctx) error {
 	ID, err := middleware.UserClaim(c)
-	fmt.Println(ID)
 	if err != nil {
 		return err
 	}

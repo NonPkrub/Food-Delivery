@@ -66,11 +66,16 @@ func (uc *promotionUseCase) GetPromotionById(id uint) ([]domain.PromotionProduct
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println(product, promotion)
 
 	dp := []domain.Product{}
 
 	promotions := []domain.PromotionProductReply{}
-	for _, pro := range product {
+	for i := range product {
+		promotion := &domain.PromotionProduct{
+			PromotionID: id,
+			ProductID:   product[i].ProductID,
+		}
 		products, err := uc.promotionRepo.GetOneByID(promotion)
 		fmt.Println(products)
 		if err != nil {
@@ -85,15 +90,17 @@ func (uc *promotionUseCase) GetPromotionById(id uint) ([]domain.PromotionProduct
 			return nil, err
 		}
 
-		promotions = append(promotions, domain.PromotionProductReply{
-			PromotionID: pro.PromotionID,
-			Product: append(dp, domain.Product{
-				Name:   productDetail.Name,
-				Detail: productDetail.Detail,
-				Price:  productDetail.Price,
-			}),
+		dp = append(dp, domain.Product{
+			Name:   productDetail.Name,
+			Detail: productDetail.Detail,
+			Price:  productDetail.Price,
 		})
 	}
+
+	promotions = append(promotions, domain.PromotionProductReply{
+		PromotionID: promotion.PromotionID,
+		Product:     dp,
+	})
 
 	return promotions, nil
 }
