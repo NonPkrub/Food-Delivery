@@ -33,15 +33,15 @@ func (p *Basket) TableName() string {
 }
 
 type BasketUseCase interface {
-	CreateBasket(b *BasketForm) error
-	AddPromotionBasket(b *BasketPromotionForm) error
-	DeletePromotionBasket(uint) error
-	GetBasketByUserId(uint) (*BasketReply, error)
+	CreateBasket(basket *BasketForm) error
+	AddPromotionBasket(basket *BasketPromotionForm) error
+	DeletePromotionBasket(id uint) error
+	GetBasketByUserId(id uint) (*BasketReply, error)
 }
 
 type BasketRepository interface {
-	CreateOne(b *Basket) error
-	Create(b *Basket) error
-	Delete(b *Basket) error
-	GetOneByID(b *Basket) (*Basket, error)
+	CreateOne(basket *Basket) error
+	Create(basket *Basket) error
+	Delete(basket *Basket) error
+	GetOneByID(basket *Basket) (*Basket, error)
 }

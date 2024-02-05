@@ -17,7 +17,8 @@ func NewProductController(productUseCase domain.ProductUseCase) *ProductControll
 }
 
 func (pc *ProductController) GetAll(c *fiber.Ctx) error {
-	result, err := pc.productUseCase.GetAll()
+	queryName := c.Query("name")
+	result, err := pc.productUseCase.GetAll(queryName)
 	if err != nil {
 		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
 			"status":      fiber.ErrInternalServerError.Message,

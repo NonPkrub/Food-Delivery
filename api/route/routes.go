@@ -20,7 +20,7 @@ func SetupRouter() *fiber.App {
 	promotionProductRepo := repository.NewPromotionProductRepository(database.DB)
 
 	//usecase
-	basketProductUseCase := usecase.NewBasketProductUseCase(basketProductRepo, promotionRepo, productRepo)
+	basketProductUseCase := usecase.NewBasketProductUseCase(basketProductRepo, promotionRepo, productRepo, basketRepo)
 	basketUseCase := usecase.NewBasketUseCase(basketRepo, basketProductUseCase)
 	userUseCase := usecase.NewUserUseCase(userRepo, basketUseCase)
 	productUseCase := usecase.NewProductUseCase(productRepo)
@@ -63,9 +63,9 @@ func SetupRouter() *fiber.App {
 	v1.Get("user/basket", middleware.JwtAuthentication(), basketController.GetBasketByUserId)
 
 	//basket_product
-	v1.Post("user/basket/:id/product", middleware.JwtAuthentication(), basketProductController.AddProductInBasket)
-	v1.Put("user/basket/:id/product", middleware.JwtAuthentication(), basketProductController.EditProductInBasket)
-	v1.Delete("user/basket/:id/product", middleware.JwtAuthentication(), basketProductController.DeleteProductInBasket)
+	v1.Post("user/basket/product", middleware.JwtAuthentication(), basketProductController.AddProductInBasket)
+	v1.Put("user/basket/product", middleware.JwtAuthentication(), basketProductController.EditProductInBasket)
+	v1.Delete("user/basket/product", middleware.JwtAuthentication(), basketProductController.DeleteProductInBasket)
 
 	//promotion_product
 	v1.Post("promotion/product", middleware.JwtAuthentication(), promotionProductController.AddPromotionProduct)

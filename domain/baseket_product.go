@@ -32,9 +32,9 @@ func (p *BasketProduct) TableName() string {
 }
 
 type BasketProductUseCase interface {
-	AddProductInBasket(b *BasketProduct) error
-	EditProductInBasket(b *BasketProduct) error
-	DeleteProductInBasket(b *BasketProduct) error
+	AddProductInBasket(b *BasketProduct, id uint) error
+	EditProductInBasket(b *BasketProduct, id uint) error
+	DeleteProductInBasket(b *BasketProduct, id uint) error
 	GetProductInBasket(b *BasketProduct) ([]BasketProductReply, float64, error)
 }
 

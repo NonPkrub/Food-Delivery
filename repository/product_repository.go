@@ -67,3 +67,14 @@ func (pr *productRepository) GetOneByID(form *domain.Product) (*domain.Product, 
 
 	return &product, nil
 }
+
+func (pr *productRepository) GetByQuery(form *domain.Product) (*domain.Product, error) {
+	var product domain.Product
+	tx := pr.DB.Where("name =?", form.Name).Find(&product)
+	if tx.Error != nil {
+		fmt.Println(tx.Error)
+		return nil, tx.Error
+	}
+
+	return &product, nil
+}

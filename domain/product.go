@@ -27,17 +27,18 @@ func (p *Product) TableName() string {
 }
 
 type ProductUseCase interface {
-	GetAll() ([]Product, error)
+	GetAll(string) ([]Product, error)
 	DeleteProduct(id uint) error
 	GetProductById(id uint) (*ProductReply, error)
-	EditProduct(p *ProductForm, id uint) (*ProductReply, error)
-	AddProduct(p *ProductForm) (*ProductReply, error)
+	EditProduct(product *ProductForm, id uint) (*ProductReply, error)
+	AddProduct(product *ProductForm) (*ProductReply, error)
 }
 
 type ProductRepository interface {
 	GetAll() ([]Product, error)
-	GetOneByID(p *Product) (*Product, error)
-	Delete(p *Product) error
-	Edit(p *Product) (*Product, error)
-	Create(p *Product) (*Product, error)
+	GetOneByID(product *Product) (*Product, error)
+	Delete(product *Product) error
+	Edit(product *Product) (*Product, error)
+	Create(product *Product) (*Product, error)
+	GetByQuery(product *Product) (*Product, error)
 }

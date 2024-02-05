@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"Food-delivery/api/middleware"
 	"Food-delivery/domain"
 	"encoding/json"
 	"strconv"
@@ -29,13 +30,15 @@ func (bpc *BasketProductController) AddProductInBasket(c *fiber.Ctx) error {
 		return err
 	}
 
-	id := c.Params("id")
-	idInt, err := strconv.ParseInt(id, 10, 64)
+	ID, err := middleware.UserClaim(c)
 	if err != nil {
 		return err
 	}
 
-	newForm.BasketID = uint(idInt)
+	uintID, err := strconv.ParseInt(ID, 10, 64)
+	if err != nil {
+		return err
+	}
 
 	if err := c.BodyParser(&newForm); err != nil {
 		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
@@ -46,7 +49,7 @@ func (bpc *BasketProductController) AddProductInBasket(c *fiber.Ctx) error {
 		})
 	}
 
-	err = bpc.basketProductUseCase.AddProductInBasket(&newForm)
+	err = bpc.basketProductUseCase.AddProductInBasket(&newForm, uint(uintID))
 	if err != nil {
 		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
 			"status":      fiber.ErrInternalServerError.Message,
@@ -66,8 +69,6 @@ func (bpc *BasketProductController) AddProductInBasket(c *fiber.Ctx) error {
 
 func (bpc *BasketProductController) EditProductInBasket(c *fiber.Ctx) error {
 	var form *domain.BasketProduct
-	id := c.Params("id")
-
 	jsonData, err := json.Marshal(form)
 	if err != nil {
 		return err
@@ -79,12 +80,15 @@ func (bpc *BasketProductController) EditProductInBasket(c *fiber.Ctx) error {
 		return err
 	}
 
-	idInt, err := strconv.ParseInt(id, 10, 64)
+	ID, err := middleware.UserClaim(c)
 	if err != nil {
 		return err
 	}
 
-	newForm.BasketID = uint(idInt)
+	uintID, err := strconv.ParseInt(ID, 10, 64)
+	if err != nil {
+		return err
+	}
 
 	if err := c.BodyParser(&newForm); err != nil {
 		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
@@ -95,7 +99,7 @@ func (bpc *BasketProductController) EditProductInBasket(c *fiber.Ctx) error {
 		})
 	}
 
-	err = bpc.basketProductUseCase.EditProductInBasket(&newForm)
+	err = bpc.basketProductUseCase.EditProductInBasket(&newForm, uint(uintID))
 	if err != nil {
 		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
 			"status":      fiber.ErrInternalServerError.Message,
@@ -115,8 +119,6 @@ func (bpc *BasketProductController) EditProductInBasket(c *fiber.Ctx) error {
 
 func (bpc *BasketProductController) DeleteProductInBasket(c *fiber.Ctx) error {
 	var form *domain.BasketProduct
-	id := c.Params("id")
-
 	jsonData, err := json.Marshal(form)
 	if err != nil {
 		return err
@@ -128,12 +130,15 @@ func (bpc *BasketProductController) DeleteProductInBasket(c *fiber.Ctx) error {
 		return err
 	}
 
-	idInt, err := strconv.ParseInt(id, 10, 64)
+	ID, err := middleware.UserClaim(c)
 	if err != nil {
 		return err
 	}
 
-	newForm.BasketID = uint(idInt)
+	uintID, err := strconv.ParseInt(ID, 10, 64)
+	if err != nil {
+		return err
+	}
 
 	if err := c.BodyParser(&newForm); err != nil {
 		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
@@ -144,7 +149,7 @@ func (bpc *BasketProductController) DeleteProductInBasket(c *fiber.Ctx) error {
 		})
 	}
 
-	err = bpc.basketProductUseCase.DeleteProductInBasket(&newForm)
+	err = bpc.basketProductUseCase.DeleteProductInBasket(&newForm, uint(uintID))
 	if err != nil {
 		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
 			"status":      fiber.ErrInternalServerError.Message,

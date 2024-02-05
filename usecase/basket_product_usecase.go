@@ -9,21 +9,31 @@ type basketProductUseCase struct {
 	basketProductRepo domain.BasketProductRepository
 	promotionRepo     domain.PromotionRepository
 	productRepo       domain.ProductRepository
+	basketRepo        domain.BasketRepository
 }
 
 func NewBasketProductUseCase(basketProductRepo domain.BasketProductRepository, promotionRepo domain.PromotionRepository,
-	productRepo domain.ProductRepository) domain.BasketProductUseCase {
-	return &basketProductUseCase{basketProductRepo: basketProductRepo, promotionRepo: promotionRepo, productRepo: productRepo}
+	productRepo domain.ProductRepository, basketRepo domain.BasketRepository) domain.BasketProductUseCase {
+	return &basketProductUseCase{basketProductRepo: basketProductRepo, promotionRepo: promotionRepo, productRepo: productRepo, basketRepo: basketRepo}
 }
 
-func (uc *basketProductUseCase) AddProductInBasket(form *domain.BasketProduct) error {
-	basket := &domain.BasketProduct{
-		BasketID:  form.BasketID,
+func (uc *basketProductUseCase) AddProductInBasket(form *domain.BasketProduct, id uint) error {
+	basket := &domain.Basket{
+		UserID: id,
+	}
+
+	userBasket, err := uc.basketRepo.GetOneByID(basket)
+	if err != nil {
+		return err
+	}
+
+	baskets := &domain.BasketProduct{
+		BasketID:  userBasket.ID,
 		ProductID: form.ProductID,
 		Quantity:  form.Quantity,
 	}
 
-	err := uc.basketProductRepo.Create(basket)
+	err = uc.basketProductRepo.Create(baskets)
 	if err != nil {
 		return err
 	}
@@ -31,14 +41,23 @@ func (uc *basketProductUseCase) AddProductInBasket(form *domain.BasketProduct) e
 	return nil
 }
 
-func (uc *basketProductUseCase) EditProductInBasket(form *domain.BasketProduct) error {
-	basket := &domain.BasketProduct{
-		BasketID:  form.BasketID,
+func (uc *basketProductUseCase) EditProductInBasket(form *domain.BasketProduct, id uint) error {
+	basket := &domain.Basket{
+		UserID: id,
+	}
+
+	userBasket, err := uc.basketRepo.GetOneByID(basket)
+	if err != nil {
+		return err
+	}
+
+	baskets := &domain.BasketProduct{
+		BasketID:  userBasket.ID,
 		ProductID: form.ProductID,
 		Quantity:  form.Quantity,
 	}
 
-	err := uc.basketProductRepo.Edit(basket)
+	err = uc.basketProductRepo.Edit(baskets)
 	if err != nil {
 		return err
 	}
@@ -46,13 +65,22 @@ func (uc *basketProductUseCase) EditProductInBasket(form *domain.BasketProduct) 
 	return nil
 }
 
-func (uc *basketProductUseCase) DeleteProductInBasket(form *domain.BasketProduct) error {
-	basket := &domain.BasketProduct{
-		BasketID:  form.BasketID,
+func (uc *basketProductUseCase) DeleteProductInBasket(form *domain.BasketProduct, id uint) error {
+	basket := &domain.Basket{
+		UserID: id,
+	}
+
+	userBasket, err := uc.basketRepo.GetOneByID(basket)
+	if err != nil {
+		return err
+	}
+
+	baskets := &domain.BasketProduct{
+		BasketID:  userBasket.ID,
 		ProductID: form.ProductID,
 	}
 
-	err := uc.basketProductRepo.Delete(basket)
+	err = uc.basketProductRepo.Delete(baskets)
 	if err != nil {
 		return err
 	}
@@ -61,7 +89,6 @@ func (uc *basketProductUseCase) DeleteProductInBasket(form *domain.BasketProduct
 }
 
 func (uc *basketProductUseCase) GetProductInBasket(form *domain.BasketProduct) ([]domain.BasketProductReply, float64, error) {
-
 	basket := &domain.BasketProduct{
 		BasketID:  form.BasketID,
 		ProductID: form.ProductID,

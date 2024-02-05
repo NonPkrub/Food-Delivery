@@ -43,18 +43,16 @@ type PromotionUseCase interface {
 	DeletePromotion(id uint) error
 	GetPromotionById(id uint) ([]PromotionProductReply, error)
 	GetAllPromotion(string, string) ([]Promotion, error)
-	//SearchPromotion(p *Promotion) ([]SearchPromotionReply, error)
 }
 
 type PromotionRepository interface {
-	Create(p *Promotion) error
-	Edit(p *Promotion) error
-	Delete(p *Promotion) error
+	Create(promotion *Promotion) error
+	Edit(promotion *Promotion) error
+	Delete(promotion *Promotion) error
 	GetAllByID(*PromotionProduct) ([]PromotionProduct, error)
-	//SearchPromotion(p *Promotion) (*Promotion, error)
 	GetAll() ([]Promotion, error)
-	GetOneByID(p *PromotionProduct) (*PromotionProduct, error)
-	FindOneByID(p *PromotionProduct) (*PromotionProduct, error)
-	FindOne(p *Promotion) (*Promotion, error)
-	GetByQuery(p *Promotion) (*Promotion, error)
+	GetOneByID(promotion *PromotionProduct) (*PromotionProduct, error)
+	FindOneByID(promotion *PromotionProduct) (*PromotionProduct, error)
+	FindOne(promotion *Promotion) (*Promotion, error)
+	GetByQuery(promotion *Promotion) (*Promotion, error)
 }

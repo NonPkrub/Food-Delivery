@@ -12,13 +12,18 @@ func NewProductUseCase(productRepo domain.ProductRepository) domain.ProductUseCa
 	return &productUseCase{productRepo: productRepo}
 }
 
-func (uc *productUseCase) GetAll() ([]domain.Product, error) {
-	products, err := uc.productRepo.GetAll()
+func (uc *productUseCase) GetAll(queryName string) ([]domain.Product, error) {
+	if queryName == "" {
+		return uc.productRepo.GetAll()
+	}
+
+	form := &domain.Product{Name: queryName}
+	product, err := uc.productRepo.GetByQuery(form)
 	if err != nil {
 		return nil, err
 	}
 
-	return products, nil
+	return []domain.Product{*product}, nil
 }
 
 func (uc *productUseCase) AddProduct(form *domain.ProductForm) (*domain.ProductReply, error) {
