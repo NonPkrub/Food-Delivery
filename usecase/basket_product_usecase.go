@@ -54,6 +54,10 @@ func (uc *basketProductUseCase) EditProductInBasket(form *domain.BasketProduct, 
 		return err
 	}
 
+	if form.Quantity == 0 {
+		form.Quantity = 1
+	}
+
 	baskets := &domain.BasketProduct{
 		BasketID:  userBasket.ID,
 		ProductID: form.ProductID,
