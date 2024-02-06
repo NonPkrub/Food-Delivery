@@ -8,6 +8,7 @@ import (
 	"os"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 	"unicode"
 
@@ -76,13 +77,14 @@ func IsValidPassword(form *domain.UserLoginForm) error {
 }
 
 func (uc *userUseCase) SignUp(form *domain.UserSignUpForm) (*domain.UserReply, error) {
+	lowerCaseEmail := strings.Map(unicode.ToLower, form.Email)
 	forms := &domain.UserLoginForm{
-		Email:    form.Email,
+		Email:    lowerCaseEmail,
 		Password: form.Password,
 	}
 
 	email := &domain.User{
-		Email:    form.Email,
+		Email:    lowerCaseEmail,
 		Password: form.Password,
 	}
 
@@ -107,7 +109,7 @@ func (uc *userUseCase) SignUp(form *domain.UserSignUpForm) (*domain.UserReply, e
 	users := &domain.User{
 		FirstName:     form.FirstName,
 		LastName:      form.LastName,
-		Email:         form.Email,
+		Email:         lowerCaseEmail,
 		Password:      form.Password,
 		PhoneNumber:   form.PhoneNumber,
 		NationalID:    form.NationalID,
@@ -132,7 +134,7 @@ func (uc *userUseCase) SignUp(form *domain.UserSignUpForm) (*domain.UserReply, e
 	userReply := &domain.UserReply{
 		FirstName:     user.FirstName,
 		LastName:      user.LastName,
-		Email:         user.Email,
+		Email:         lowerCaseEmail,
 		PhoneNumber:   user.PhoneNumber,
 		NationalID:    user.NationalID,
 		Address:       user.Address,
@@ -140,17 +142,17 @@ func (uc *userUseCase) SignUp(form *domain.UserSignUpForm) (*domain.UserReply, e
 	}
 
 	return userReply, nil
-
 }
 
 func (uc *userUseCase) Login(form *domain.UserLoginForm) (*domain.TokenReply, error) {
+	lowerCaseEmail := strings.Map(unicode.ToLower, form.Email)
 	users := &domain.User{
-		Email:    form.Email,
+		Email:    lowerCaseEmail,
 		Password: form.Password,
 	}
 
 	forms := &domain.UserLoginForm{
-		Email:    form.Email,
+		Email:    lowerCaseEmail,
 		Password: form.Password,
 	}
 
@@ -170,7 +172,7 @@ func (uc *userUseCase) Login(form *domain.UserLoginForm) (*domain.TokenReply, er
 	}
 
 	claims := domain.UsersClaims{
-		Email: form.Email,
+		Email: lowerCaseEmail,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
@@ -196,25 +198,25 @@ func (uc *userUseCase) Login(form *domain.UserLoginForm) (*domain.TokenReply, er
 
 }
 
-func (uc *userUseCase) GetUserByID(id uint) (*domain.UserReply, error) {
-	var user domain.User
-	users, err := uc.userRepo.GetOneByID(&user)
-	if err != nil {
-		return nil, err
-	}
+// func (uc *userUseCase) GetUserByID(id uint) (*domain.UserReply, error) {
+// 	var user domain.User
+// 	users, err := uc.userRepo.GetOneByID(&user)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	userReply := &domain.UserReply{
-		FirstName:     users.FirstName,
-		LastName:      users.LastName,
-		Email:         users.Email,
-		PhoneNumber:   users.PhoneNumber,
-		NationalID:    users.NationalID,
-		Address:       users.Address,
-		DetailAddress: users.DetailAddress,
-	}
+// 	userReply := &domain.UserReply{
+// 		FirstName:     users.FirstName,
+// 		LastName:      users.LastName,
+// 		Email:         users.Email,
+// 		PhoneNumber:   users.PhoneNumber,
+// 		NationalID:    users.NationalID,
+// 		Address:       users.Address,
+// 		DetailAddress: users.DetailAddress,
+// 	}
 
-	return userReply, nil
-}
+// 	return userReply, nil
+// }
 
 func (uc *userUseCase) Me(myToken string) (*domain.UserReply, error) {
 	token, err := jwt.ParseWithClaims(myToken, &domain.UsersClaims{}, func(token *jwt.Token) (interface{}, error) {
@@ -236,10 +238,12 @@ func (uc *userUseCase) Me(myToken string) (*domain.UserReply, error) {
 		return nil, err
 	}
 
+	lowerCaseEmail := strings.Map(unicode.ToLower, user.Email)
+
 	userReply := &domain.UserReply{
 		FirstName:     user.FirstName,
 		LastName:      user.LastName,
-		Email:         user.Email,
+		Email:         lowerCaseEmail,
 		PhoneNumber:   user.PhoneNumber,
 		NationalID:    user.NationalID,
 		Address:       user.Address,

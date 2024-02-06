@@ -16,8 +16,7 @@ func NewBasketRepository(DB *gorm.DB) domain.BasketRepository {
 }
 
 func (br *basketRepository) CreateOne(form *domain.Basket) error {
-	var basket domain.Basket
-	tx := br.DB.Where("user_id =?", form.UserID).Where("promotion_id=?", 0).Create(&basket)
+	tx := br.DB.Create(form)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return tx.Error
@@ -54,7 +53,7 @@ func (br *basketRepository) GetOneByID(form *domain.Basket) (*domain.Basket, err
 		return nil, tx.Error
 	}
 
-	if form.PromotionID != 0 {
+	if form.PromotionID != nil {
 		basket.PromotionID = form.PromotionID
 	}
 

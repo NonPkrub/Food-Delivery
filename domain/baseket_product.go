@@ -35,7 +35,7 @@ type BasketProductUseCase interface {
 	AddProductInBasket(b *BasketProduct, id uint) error
 	EditProductInBasket(b *BasketProduct, id uint) error
 	DeleteProductInBasket(b *BasketProduct, id uint) error
-	GetProductInBasket(b *BasketProduct) ([]BasketProductReply, float64, error)
+	GetProductInBasket(b *BasketProduct) ([]BasketProductReply, float64, float64, float64, error)
 }
 
 type BasketProductRepository interface {

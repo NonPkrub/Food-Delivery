@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"Food-delivery/domain"
-	"fmt"
 )
 
 type basketProductUseCase struct {
@@ -88,7 +87,7 @@ func (uc *basketProductUseCase) DeleteProductInBasket(form *domain.BasketProduct
 	return nil
 }
 
-func (uc *basketProductUseCase) GetProductInBasket(form *domain.BasketProduct) ([]domain.BasketProductReply, float64, error) {
+func (uc *basketProductUseCase) GetProductInBasket(form *domain.BasketProduct) ([]domain.BasketProductReply, float64, float64, float64, error) {
 	basket := &domain.BasketProduct{
 		BasketID:  form.BasketID,
 		ProductID: form.ProductID,
@@ -97,16 +96,16 @@ func (uc *basketProductUseCase) GetProductInBasket(form *domain.BasketProduct) (
 
 	product, err := uc.basketProductRepo.FindAllByID(basket)
 	if err != nil {
-		return nil, 0, err
+		return nil, 0, 0, 0, err
 	}
 
-	var totalProductPrice float64
+	var totalProductPrice, subPrice, discount float64
 
 	pb := []domain.ProductForm{}
 
 	promotionId, err := uc.basketProductRepo.GetPromotionByBasketID(basket)
 	if err != nil {
-		return nil, 0, err
+		return nil, 0, 0, 0, err
 	}
 
 	products := []domain.BasketProductReply{}
@@ -117,19 +116,8 @@ func (uc *basketProductUseCase) GetProductInBasket(form *domain.BasketProduct) (
 		productID.ID = pro.ProductID
 		productDetail, err := uc.productRepo.GetOneByID(productID)
 		if err != nil {
-			return nil, 0, err
+			return nil, 0, 0, 0, err
 		}
-
-		// if promotionId != 0 {
-		// 	promotion, err := b.basketProductRepo.GetPromotionBasket(basket, promotionId)
-		// 	if err != nil {
-		// 		return nil, 0, err
-		// 	}
-		// 	fmt.Println(pro.ProductID == promotion.ProductID, pro.ProductID)
-		// 	if pro.ProductID == promotion.ProductID {
-		// 		price.Price = price.Price - promotion.Discount
-		// 	}
-		// }
 
 		products = append(products, domain.BasketProductReply{
 			Product: append(pb, domain.ProductForm{
@@ -142,24 +130,25 @@ func (uc *basketProductUseCase) GetProductInBasket(form *domain.BasketProduct) (
 
 		totalPrice := calculateTotalPrice(productDetail.Price, pro.Quantity)
 		totalProductPrice += totalPrice
+		subPrice = totalProductPrice
 
 		if promotionId != 0 && !oneTimeUse {
 			promotion := &domain.PromotionProduct{}
 			promotion.PromotionID = promotionId
 			promotion.ProductID = pro.ProductID
-			promotions, err := uc.promotionRepo.FindOneByID(promotion)
+			promotions, err := uc.promotionRepo.GetOneByID(promotion)
 			if err != nil {
-				return nil, 0, err
+				return nil, 0, 0, 0, err
 			}
 
 			promotionDetail := &domain.Promotion{}
 			promotionDetail.ID = promotions.PromotionID
 			promotionDiscount, err := uc.promotionRepo.FindOne(promotionDetail)
 			if err != nil {
-				return nil, 0, err
+				return nil, 0, 0, 0, err
 			}
 
-			fmt.Println(pro.ProductID, promotions.ProductID, pro.ProductID == promotions.ProductID)
+			discount = promotionDiscount.Discount
 
 			if pro.ProductID == promotions.ProductID {
 				totalProductPrice = totalProductPrice - promotionDiscount.Discount
@@ -169,10 +158,12 @@ func (uc *basketProductUseCase) GetProductInBasket(form *domain.BasketProduct) (
 		}
 	}
 
-	totalPrices := float64(0)
+	var totalPrices, subTotalPrice, discountPrice float64
 	totalPrices = totalProductPrice
+	subTotalPrice = subPrice
+	discountPrice = discount
 
-	return products, totalPrices, nil
+	return products, totalPrices, subTotalPrice, discountPrice, nil
 }
 
 func calculateTotalPrice(products float64, number uint) float64 {

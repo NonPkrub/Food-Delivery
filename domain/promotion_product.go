@@ -11,8 +11,11 @@ type PromotionProductForm struct {
 }
 
 type PromotionProductReply struct {
-	PromotionID uint      `json:"promotion_id"`
-	Product     []Product `json:"product"`
+	Code     string    `json:"code"`
+	Discount float64   `json:"discount"`
+	Name     string    `json:"name"`
+	Detail   string    `json:"detail"`
+	Product  []Product `json:"product"`
 }
 
 type PromotionProductReplyId struct {

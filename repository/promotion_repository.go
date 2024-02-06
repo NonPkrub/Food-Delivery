@@ -116,9 +116,9 @@ func (pr *promotionRepository) GetOneByID(form *domain.PromotionProduct) (*domai
 	return &promotion, nil
 }
 
-func (pr *promotionRepository) FindOneByID(form *domain.PromotionProduct) (*domain.PromotionProduct, error) {
+func (pr *promotionRepository) FindOneByID(form *domain.Promotion) (*domain.PromotionProduct, error) {
 	var promotion domain.PromotionProduct
-	tx := pr.DB.Where("promotion_id=? AND product_id=?", form.PromotionID, form.ProductID).Find(&promotion)
+	tx := pr.DB.Where("promotion_id=? ", form.ID).Find(&promotion)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
 		return nil, tx.Error

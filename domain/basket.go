@@ -4,7 +4,7 @@ type Basket struct {
 	Model
 	UserID      uint      `json:"user_id"`
 	User        User      `gorm:"foreignKey:UserID;references:ID"`
-	PromotionID uint      `json:"promotion_id" gorm:"nullable"`
+	PromotionID *uint     `json:"promotion_id" gorm:"nullable"`
 	Promotion   Promotion `gorm:"foreignKey:PromotionID;reference:ID"`
 
 	BasketProduct []BasketProduct `gorm:"foreignKey:BasketID"`
@@ -16,11 +16,13 @@ type BasketForm struct {
 }
 
 type BasketReply struct {
-	ID            uint                 `json:"id"`
-	UserID        uint                 `json:"user_id"`
-	BasketProduct []BasketProductReply `json:"basket_product_reply"`
-	PromotionID   uint                 `json:"promotion_id"`
-	TotalPrice    float64              `json:"total_price"`
+	ID             uint                 `json:"id"`
+	UserID         uint                 `json:"user_id"`
+	BasketProducts []BasketProductReply `json:"basket_products"`
+	PromotionID    uint                 `json:"promotion_id"`
+	TotalPrice     float64              `json:"total_price"`
+	SubTotalPrice  float64              `json:"subtotal_price"`
+	Discount       float64              `json:"discount"`
 }
 
 type BasketPromotionForm struct {

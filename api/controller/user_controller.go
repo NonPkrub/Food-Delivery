@@ -3,8 +3,6 @@ package controller
 import (
 	"Food-delivery/domain"
 	"encoding/json"
-	"fmt"
-	"strconv"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
@@ -98,32 +96,32 @@ func (uc *UserController) Login(c *fiber.Ctx) error {
 	})
 }
 
-func (uc *UserController) GetUserById(c *fiber.Ctx) error {
-	user := c.Params("id")
+// func (uc *UserController) GetUserById(c *fiber.Ctx) error {
+// 	user := c.Params("id")
 
-	userInt, err := strconv.ParseInt(user, 10, 64)
-	if err != nil {
-		return err
-	}
-	fmt.Println(userInt)
-	result, err := uc.userUseCase.GetUserByID(uint(userInt))
+// 	userInt, err := strconv.ParseInt(user, 10, 64)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	fmt.Println(userInt)
+// 	result, err := uc.userUseCase.GetUserByID(uint(userInt))
 
-	if err != nil {
-		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
-			"status":      fiber.ErrInternalServerError.Message,
-			"status_code": fiber.ErrInternalServerError.Code,
-			"message":     err.Error(),
-			"result":      nil,
-		})
-	}
+// 	if err != nil {
+// 		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
+// 			"status":      fiber.ErrInternalServerError.Message,
+// 			"status_code": fiber.ErrInternalServerError.Code,
+// 			"message":     err.Error(),
+// 			"result":      nil,
+// 		})
+// 	}
 
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"status":      "OK",
-		"status_code": fiber.StatusOK,
-		"message":     "",
-		"result":      result,
-	})
-}
+// 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+// 		"status":      "OK",
+// 		"status_code": fiber.StatusOK,
+// 		"message":     "",
+// 		"result":      result,
+// 	})
+// }
 
 func (uc *UserController) Me(c *fiber.Ctx) error {
 	myToken := strings.TrimPrefix(c.Get("Authorization"), "Bearer ")

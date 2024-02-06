@@ -62,7 +62,7 @@ type UsersClaims struct {
 type UserUseCase interface {
 	SignUp(user *UserSignUpForm) (*UserReply, error)
 	Login(user *UserLoginForm) (*TokenReply, error)
-	GetUserByID(id uint) (*UserReply, error)
+	//GetUserByID(id uint) (*UserReply, error)
 	Me(string) (*UserReply, error)
 }
 

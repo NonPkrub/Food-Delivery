@@ -29,7 +29,7 @@ type PromotionReply struct {
 	ProductID uint    `json:"product_id"`
 }
 
-type SearchPromotionReply struct {
+type PromotionDetail struct {
 	Code     string    `json:"code"`
 	Discount float64   `json:"discount"`
 	Name     string    `json:"name"`
@@ -42,7 +42,7 @@ type PromotionUseCase interface {
 	EditPromotion(p *PromotionForm, id uint) error
 	DeletePromotion(id uint) error
 	GetPromotionById(id uint) ([]PromotionProductReply, error)
-	GetAllPromotion(string, string) ([]Promotion, error)
+	GetAllPromotion(string, string) ([]PromotionDetail, error)
 }
 
 type PromotionRepository interface {
@@ -52,7 +52,7 @@ type PromotionRepository interface {
 	GetAllByID(*PromotionProduct) ([]PromotionProduct, error)
 	GetAll() ([]Promotion, error)
 	GetOneByID(promotion *PromotionProduct) (*PromotionProduct, error)
-	FindOneByID(promotion *PromotionProduct) (*PromotionProduct, error)
+	FindOneByID(promotion *Promotion) (*PromotionProduct, error)
 	FindOne(promotion *Promotion) (*Promotion, error)
 	GetByQuery(promotion *Promotion) (*Promotion, error)
 }
