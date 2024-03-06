@@ -1,16 +1,21 @@
 package usecase
 
 import (
+	"Food-delivery/dal"
 	"Food-delivery/domain"
 )
 
 type promotionUseCase struct {
-	promotionRepo domain.PromotionRepository
-	productRepo   domain.ProductRepository
+	// promotionRepo domain.PromotionRepository
+	// productRepo   domain.ProductRepository
+
+	promotionRepo        dal.IPromotionDo
+	productRepo          dal.IProductDo
+	promotionProductRepo dal.IPromotionProductDo
 }
 
-func NewPromotionUseCase(promotionRepo domain.PromotionRepository, productRepo domain.ProductRepository) domain.PromotionUseCase {
-	return &promotionUseCase{promotionRepo: promotionRepo, productRepo: productRepo}
+func NewPromotionUseCase(promotionRepo dal.IPromotionDo, productRepo dal.IProductDo, promotionProductRepo dal.IPromotionProductDo) domain.PromotionUseCase {
+	return &promotionUseCase{promotionRepo: promotionRepo, productRepo: productRepo, promotionProductRepo: promotionProductRepo}
 }
 
 func (uc *promotionUseCase) CreatePromotion(form *domain.PromotionForm) error {
@@ -37,7 +42,7 @@ func (uc *promotionUseCase) EditPromotion(form *domain.PromotionForm, id uint) e
 		Detail:   form.Detail,
 	}
 	promotion.ID = id
-	err := uc.promotionRepo.Edit(promotion)
+	err := uc.promotionRepo.Save(promotion)
 	if err != nil {
 		return err
 	}
@@ -48,7 +53,7 @@ func (uc *promotionUseCase) EditPromotion(form *domain.PromotionForm, id uint) e
 func (uc *promotionUseCase) DeletePromotion(id uint) error {
 	var promotion domain.Promotion
 	promotion.ID = id
-	err := uc.promotionRepo.Delete(&promotion)
+	_, err := uc.promotionRepo.Delete(&promotion)
 	if err != nil {
 		return err
 	}
@@ -61,7 +66,8 @@ func (uc *promotionUseCase) GetPromotionById(id uint) ([]domain.PromotionProduct
 		PromotionID: id,
 	}
 
-	product, err := uc.promotionRepo.GetAllByID(promotion)
+	product, err := uc.promotionProductRepo.Where(dal.PromotionProduct.PromotionID.Eq(id)).Find()
+	//promotions, err := uc.promotionRepo.Where(dal.Promotion.ID.Eq(id)).Find()
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +81,7 @@ func (uc *promotionUseCase) GetPromotionById(id uint) ([]domain.PromotionProduct
 			ProductID:   product[i].ProductID,
 		}
 
-		products, err := uc.promotionRepo.GetOneByID(promotion)
+		products, err := uc.promotionProductRepo.Where(dal.PromotionProduct.PromotionID.Eq(promotion.ProductID)).Where(dal.PromotionProduct.ProductID.Eq(promotion.ProductID)).First()
 		if err != nil {
 			return nil, err
 		}
@@ -83,7 +89,8 @@ func (uc *promotionUseCase) GetPromotionById(id uint) ([]domain.PromotionProduct
 		productId := &domain.Product{}
 		productId.ID = products.ProductID
 
-		productDetail, err := uc.productRepo.GetOneByID(productId)
+		//productDetail, err := uc.productRepo.GetOneByID(productId)
+		productDetail, err := uc.productRepo.Where(dal.Product.ID.Eq(productId.ID)).First()
 		if err != nil {
 			return nil, err
 		}
@@ -97,7 +104,7 @@ func (uc *promotionUseCase) GetPromotionById(id uint) ([]domain.PromotionProduct
 
 	promotionID := &domain.Promotion{}
 	promotionID.ID = promotion.PromotionID
-	promotionDetail, err := uc.promotionRepo.FindOne(promotionID)
+	promotionDetail, err := uc.promotionRepo.Where(dal.Promotion.ID.Eq(promotionID.ID)).First()
 	if err != nil {
 		return nil, err
 	}
@@ -115,7 +122,7 @@ func (uc *promotionUseCase) GetPromotionById(id uint) ([]domain.PromotionProduct
 
 func (uc *promotionUseCase) GetAllPromotion(queryCode, queryName string) ([]domain.PromotionDetail, error) {
 	if queryCode == "" && queryName == "" {
-		promotion, err := uc.promotionRepo.GetAll()
+		promotion, err := uc.promotionRepo.Find()
 		if err != nil {
 			return nil, err
 		}
@@ -124,24 +131,24 @@ func (uc *promotionUseCase) GetAllPromotion(queryCode, queryName string) ([]doma
 		promotions := []domain.PromotionDetail{}
 
 		for i := range promotion {
-			promotionID := &domain.PromotionProduct{
-				PromotionID: promotion[i].ID,
-			}
+			// promotionID := &domain.PromotionProduct{
+			// 	PromotionID: promotion[i].ID,
+			// }
 
-			product, err := uc.promotionRepo.GetAllByID(promotionID)
+			product, err := uc.promotionRepo.Where(dal.Promotion.ID.Eq(promotion[i].ID)).Find()
 			if err != nil {
 				return nil, err
 			}
 
 			for range product {
-				products, err := uc.promotionRepo.FindOneByID(&promotion[i])
+				products, err := uc.promotionProductRepo.Where(dal.PromotionProduct.PromotionID.Eq(promotion[i].ID)).First()
 				if err != nil {
 					return nil, err
 				}
 
 				productId := &domain.Product{}
 				productId.ID = products.ProductID
-				productDetail, err := uc.productRepo.GetOneByID(productId)
+				productDetail, err := uc.productRepo.Where(dal.Product.ID.Eq(productId.ID)).First()
 				if err != nil {
 					return nil, err
 				}
@@ -164,51 +171,52 @@ func (uc *promotionUseCase) GetAllPromotion(queryCode, queryName string) ([]doma
 		return promotions, nil
 	}
 
-	form := &domain.Promotion{Code: queryCode, Name: queryName}
-	promotion, err := uc.promotionRepo.GetByQuery(form)
-	if err != nil {
-		return nil, err
-	}
+	// form := &domain.Promotion{Code: queryCode, Name: queryName}
+	// promotion, err := uc.promotionRepo.GetByQuery(form)
+	// if err != nil {
+	// 	return nil, err
+	// }
 
-	dp := []domain.Product{}
-	promotions := []domain.PromotionDetail{}
+	// dp := []domain.Product{}
+	// promotions := []domain.PromotionDetail{}
 
-	promotionID := &domain.PromotionProduct{
-		PromotionID: promotion.ID,
-	}
+	// promotionID := &domain.PromotionProduct{
+	// 	PromotionID: promotion.ID,
+	// }
 
-	product, err := uc.promotionRepo.GetAllByID(promotionID)
-	if err != nil {
-		return nil, err
-	}
+	// product, err := uc.promotionRepo.GetAllByID(promotionID)
+	// if err != nil {
+	// 	return nil, err
+	// }
 
-	for range product {
-		products, err := uc.promotionRepo.FindOneByID(promotion)
-		if err != nil {
-			return nil, err
-		}
+	// for range product {
+	// 	products, err := uc.promotionRepo.FindOneByID(promotion)
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
 
-		productId := &domain.Product{}
-		productId.ID = products.ProductID
-		productDetail, err := uc.productRepo.GetOneByID(productId)
-		if err != nil {
-			return nil, err
-		}
+	// 	productId := &domain.Product{}
+	// 	productId.ID = products.ProductID
+	// 	productDetail, err := uc.productRepo.GetOneByID(productId)
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
 
-		dp = append(dp, domain.Product{
-			Name:   productDetail.Name,
-			Detail: productDetail.Detail,
-			Price:  productDetail.Price,
-		})
-	}
+	// 	dp = append(dp, domain.Product{
+	// 		Name:   productDetail.Name,
+	// 		Detail: productDetail.Detail,
+	// 		Price:  productDetail.Price,
+	// 	})
+	// }
 
-	promotions = append(promotions, domain.PromotionDetail{
-		Code:     promotion.Code,
-		Discount: promotion.Discount,
-		Name:     promotion.Name,
-		Detail:   promotion.Detail,
-		Product:  dp,
-	})
+	// promotions = append(promotions, domain.PromotionDetail{
+	// 	Code:     promotion.Code,
+	// 	Discount: promotion.Discount,
+	// 	Name:     promotion.Name,
+	// 	Detail:   promotion.Detail,
+	// 	Product:  dp,
+	// })
 
-	return promotions, nil
+	// return promotions, nil
+	return nil, nil
 }

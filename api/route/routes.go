@@ -3,28 +3,35 @@ package route
 import (
 	"Food-delivery/api/controller"
 	"Food-delivery/api/middleware"
+	"Food-delivery/dal"
 	"Food-delivery/database"
 	"Food-delivery/repository"
 	"Food-delivery/usecase"
+	"context"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 func SetupRouter() *fiber.App {
 	//repo
+	ctx := context.Background()
+
 	userRepo := repository.NewUserRepository(database.DB)
 	productRepo := repository.NewProductRepository(database.DB)
 	promotionRepo := repository.NewPromotionRepository(database.DB)
 	basketProductRepo := repository.NewBasketProductRepository(database.DB)
 	basketRepo := repository.NewBasketRepository(database.DB)
 	promotionProductRepo := repository.NewPromotionProductRepository(database.DB)
+	promotionRepoTest := dal.Use(database.DB).WithContext(ctx).Promotion
+	productRepoTest := dal.Use(database.DB).WithContext(ctx).Product
+	promotionProductRepoTest := dal.Use(database.DB).WithContext(ctx).PromotionProduct
 
 	//usecase
 	basketProductUseCase := usecase.NewBasketProductUseCase(basketProductRepo, promotionRepo, productRepo, basketRepo)
 	basketUseCase := usecase.NewBasketUseCase(basketRepo, basketProductUseCase)
 	userUseCase := usecase.NewUserUseCase(userRepo, basketUseCase)
 	productUseCase := usecase.NewProductUseCase(productRepo)
-	promotionUseCase := usecase.NewPromotionUseCase(promotionRepo, productRepo)
+	promotionUseCase := usecase.NewPromotionUseCase(promotionRepoTest, productRepoTest, promotionProductRepoTest)
 	promotionProductUseCase := usecase.NewPromotionProductUseCase(promotionProductRepo, productRepo)
 
 	//controllers
